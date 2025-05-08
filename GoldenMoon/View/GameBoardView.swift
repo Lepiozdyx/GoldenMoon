@@ -26,17 +26,11 @@ struct GameBoardView: View {
                 Image(.desk)
                     .resizable()
                     .frame(width: maxRadius * 2.2, height: maxRadius * 2.2)
-                    .overlay {
-                        Image(.moon)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 70)
-                    }
                 
                 // Рисуем кольца
                 ForEach([maxRadius, middleRadius, innerRadius], id: \.self) { radius in
                     Circle()
-                        .stroke(Color.white.opacity(0.6), lineWidth: 2)
+                        .stroke(Color.coffe, lineWidth: 6)
                         .frame(width: radius * 2, height: radius * 2)
                 }
                 
@@ -50,7 +44,12 @@ struct GameBoardView: View {
                     path.move(to: CGPoint(x: center.x, y: center.y - maxRadius))
                     path.addLine(to: CGPoint(x: center.x, y: center.y + maxRadius))
                 }
-                .stroke(Color.white.opacity(0.6), lineWidth: 2)
+                .stroke(Color.coffe, lineWidth: 6)
+                
+                Image(.moon)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 70)
                 
                 // Подсвечиваем мельницы
                 if let lastMillNodeId = viewModel.game.lastMillFormedAt,
