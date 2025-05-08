@@ -5,14 +5,12 @@
 import Foundation
 import SwiftUI
 
-struct MillBoard {
-    var nodes: [MillNode]
+class MillBoard: ObservableObject {
+    @Published var nodes: [MillNode]
     let millLines: [Set<Int>]
     
     init() {
         // Инициализация узлов игрового поля
-        // В ТЗ указано, что поле выполнено в виде колец с четырьмя радиальными соединительными линиями
-        
         var initialNodes: [MillNode] = []
         
         // Формируем внешнее кольцо (8 узлов)
@@ -198,21 +196,21 @@ struct MillBoard {
     }
     
     // Модифицирующий метод для обновления узла
-    mutating func updateNode(id: Int, piece: MillPiece?) {
+    func updateNode(id: Int, piece: MillPiece?) {
         if let index = nodes.firstIndex(where: { $0.id == id }) {
             nodes[index].piece = piece
         }
     }
     
     // Модифицирующий метод для выделения узла
-    mutating func highlightNode(id: Int, highlighted: Bool) {
+    func highlightNode(id: Int, highlighted: Bool) {
         if let index = nodes.firstIndex(where: { $0.id == id }) {
             nodes[index].isHighlighted = highlighted
         }
     }
     
     // Сброс всех выделений
-    mutating func resetHighlights() {
+    func resetHighlights() {
         for i in 0..<nodes.count {
             nodes[i].isHighlighted = false
         }

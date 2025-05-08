@@ -6,7 +6,7 @@ import SwiftUI
 import Combine
 
 class MillGameViewModel: ObservableObject {
-    @Published var game: MillGame
+    @ObservedObject var game: MillGame
     @Published var showVictoryOverlay: Bool = false
     @Published var showDefeatOverlay: Bool = false
     @Published var isPaused: Bool = false
@@ -24,6 +24,7 @@ class MillGameViewModel: ObservableObject {
     private func setupBindings() {
         // Наблюдаем за изменениями в игре
         game.$gameOver
+            .receive(on: RunLoop.main)
             .sink { [weak self] gameOver in
                 guard let self = self, gameOver else { return }
                 self.handleGameOver()
@@ -32,6 +33,7 @@ class MillGameViewModel: ObservableObject {
         
         // В режиме игры против ИИ, делаем ход ИИ после хода игрока
         game.$currentPlayer
+            .receive(on: RunLoop.main)
             .sink { [weak self] player in
                 guard let self = self,
                       self.game.gameMode == .vsAI,
@@ -47,52 +49,74 @@ class MillGameViewModel: ObservableObject {
                 }
             }
             .store(in: &cancellables)
+            
+        // Добавляем явное прослушивание objectWillChange
+        game.objectWillChange
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                self?.objectWillChange.send()
+            }
+            .store(in: &cancellables)
     }
     
     // MARK: - Game Controls
     
     func handleNodeTap(_ nodeId: Int) {
-        if game.gameMode == .tutorial {
-            handleTutorialNodeTap(nodeId)
-            return
-        }
-        
-        if isPaused || game.gameOver {
-            return
-        }
-        
-        // Обрабатываем действие в зависимости от текущей фазы игры
-        if game.mustRemovePiece {
-            game.removePiece(at: nodeId)
-        } else if game.phase == .placement {
-            game.placePiece(at: nodeId)
-        } else {
-            // Фазы movement или jump
-            if let selectedNodeId = game.selectedNodeId {
-                game.movePiece(from: selectedNodeId, to: nodeId)
+        // Всегда обрабатываем на основном потоке
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            
+            if self.game.gameMode == .tutorial {
+                self.handleTutorialNodeTap(nodeId)
+                return
+            }
+            
+            if self.isPaused || self.game.gameOver {
+                return
+            }
+            
+            // Обрабатываем действие в зависимости от текущей фазы игры
+            if self.game.mustRemovePiece {
+                self.game.removePiece(at: nodeId)
+            } else if self.game.phase == .placement {
+                self.game.placePiece(at: nodeId)
             } else {
-                game.selectPiece(at: nodeId)
+                // Фазы movement или jump
+                if let selectedNodeId = self.game.selectedNodeId {
+                    self.game.movePiece(from: selectedNodeId, to: nodeId)
+                } else {
+                    self.game.selectPiece(at: nodeId)
+                }
             }
         }
     }
     
     func togglePause(_ paused: Bool) {
-        isPaused = paused
+        DispatchQueue.main.async { [weak self] in
+            self?.isPaused = paused
+        }
     }
     
     func pauseGame() {
-        isPaused = true
+        DispatchQueue.main.async { [weak self] in
+            self?.isPaused = true
+        }
     }
     
     func resumeGame() {
-        isPaused = false
+        DispatchQueue.main.async { [weak self] in
+            self?.isPaused = false
+        }
     }
     
     func resetGame() {
-        game.resetGame()
-        showVictoryOverlay = false
-        showDefeatOverlay = false
-        isPaused = false
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.game.resetGame()
+            self.showVictoryOverlay = false
+            self.showDefeatOverlay = false
+            self.isPaused = false
+        }
     }
     
     // MARK: - Game State
@@ -126,42 +150,47 @@ class MillGameViewModel: ObservableObject {
     // MARK: - Tutorial Mode
     
     private func handleTutorialNodeTap(_ nodeId: Int) {
-        // Логика для пошагового обучения
-        switch tutorialStep {
-        case 0: // Объяснение правил размещения фишек
-            if game.phase == .placement && !game.mustRemovePiece {
-                game.placePiece(at: nodeId)
-                if game.millFormed {
-                    tutorialStep = 1 // Переход к объяснению удаления фишек при формировании мельницы
+        // Всегда обрабатываем на основном потоке
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            
+            // Логика для пошагового обучения
+            switch self.tutorialStep {
+            case 0: // Объяснение правил размещения фишек
+                if self.game.phase == .placement && !self.game.mustRemovePiece {
+                    self.game.placePiece(at: nodeId)
+                    if self.game.millFormed {
+                        self.tutorialStep = 1 // Переход к объяснению удаления фишек при формировании мельницы
+                    }
                 }
-            }
-        case 1: // Объяснение удаления фишек при формировании мельницы
-            if game.mustRemovePiece {
-                game.removePiece(at: nodeId)
-                tutorialStep = 2 // Переход к объяснению перемещения фишек
-            }
-        case 2: // Объяснение перемещения фишек
-            if game.phase == .movement && !game.mustRemovePiece {
-                if game.selectedNodeId == nil {
-                    game.selectPiece(at: nodeId)
-                } else {
-                    game.movePiece(from: game.selectedNodeId!, to: nodeId)
-                    tutorialStep = 3 // Переход к объяснению прыжков
+            case 1: // Объяснение удаления фишек при формировании мельницы
+                if self.game.mustRemovePiece {
+                    self.game.removePiece(at: nodeId)
+                    self.tutorialStep = 2 // Переход к объяснению перемещения фишек
                 }
-            }
-        case 3: // Объяснение прыжков (при 3 фишках)
-            if game.phase == .jump && !game.mustRemovePiece {
-                if game.selectedNodeId == nil {
-                    game.selectPiece(at: nodeId)
-                } else {
-                    game.movePiece(from: game.selectedNodeId!, to: nodeId)
-                    tutorialStep = 4 // Завершение обучения
+            case 2: // Объяснение перемещения фишек
+                if self.game.phase == .movement && !self.game.mustRemovePiece {
+                    if self.game.selectedNodeId == nil {
+                        self.game.selectPiece(at: nodeId)
+                    } else {
+                        self.game.movePiece(from: self.game.selectedNodeId!, to: nodeId)
+                        self.tutorialStep = 3 // Переход к объяснению прыжков
+                    }
                 }
+            case 3: // Объяснение прыжков (при 3 фишках)
+                if self.game.phase == .jump && !self.game.mustRemovePiece {
+                    if self.game.selectedNodeId == nil {
+                        self.game.selectPiece(at: nodeId)
+                    } else {
+                        self.game.movePiece(from: self.game.selectedNodeId!, to: nodeId)
+                        self.tutorialStep = 4 // Завершение обучения
+                    }
+                }
+            case 4: // Завершение обучения
+                self.tutorialCompleted = true
+            default:
+                break
             }
-        case 4: // Завершение обучения
-            tutorialCompleted = true
-        default:
-            break
         }
     }
     

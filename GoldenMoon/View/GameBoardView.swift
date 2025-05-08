@@ -75,7 +75,7 @@ struct GameBoardView: View {
                     }
                 }
                 
-                // Размещаем узлы
+                // Размещаем узлы с анимацией для переходов
                 ForEach(viewModel.game.board.nodes) { node in
                     let nodePosition = getNodePosition(node: node, center: center, maxRadius: maxRadius, middleRadius: middleRadius, innerRadius: innerRadius)
                     
@@ -83,9 +83,13 @@ struct GameBoardView: View {
                         onNodeTap(node.id)
                     })
                     .position(nodePosition)
+                    .animation(.easeInOut, value: node.piece)
+                    .animation(.easeInOut, value: node.isHighlighted)
                     .transition(.scale.combined(with: .opacity))
                 }
             }
+            // Добавляем анимацию при обновлении игрового поля
+            .animation(.easeInOut(duration: 0.3), value: viewModel.game.board.nodes)
         }
     }
     
