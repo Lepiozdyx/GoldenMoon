@@ -9,88 +9,26 @@ struct MenuView: View {
     
     var body: some View {
         ZStack {
-            // Фон
-            LinearGradient(
-                gradient: Gradient(colors: [Color.purple.opacity(0.6), Color.black]),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+            BackgroundView(name: .bgimg1)
             
-            VStack(spacing: 20) {
-                Button(action: {
-                    appViewModel.startGame(mode: .twoPlayers)
-                }) {
-                    Text("Two Players")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(width: 200)
-                        .padding()
-                        .background(
-                            Capsule()
-                                .fill(Color.blue)
-                                .overlay(
-                                    Capsule()
-                                        .stroke(Color.white, lineWidth: 2)
-                                )
-                        )
+            EmblemView()
+            
+            SidebarView()
+            
+            VStack(spacing: 15) {
+                Spacer()
+                
+                MainButtonView(label: "Play", labelSize: 20) {
+//                    svm.play()
+//                    appViewModel.navigateTo(.mode)
                 }
                 
-                Button(action: {
-                    appViewModel.startGame(mode: .vsAI)
-                }) {
-                    Text("Play vs CPU")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(width: 200)
-                        .padding()
-                        .background(
-                            Capsule()
-                                .fill(Color.green)
-                                .overlay(
-                                    Capsule()
-                                        .stroke(Color.white, lineWidth: 2)
-                                )
-                        )
-                }
-                
-                Button(action: {
-                    appViewModel.startGame(mode: .tutorial)
-                }) {
-                    Text("Tutorial")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(width: 200)
-                        .padding()
-                        .background(
-                            Capsule()
-                                .fill(Color.orange)
-                                .overlay(
-                                    Capsule()
-                                        .stroke(Color.white, lineWidth: 2)
-                                )
-                        )
-                }
-                
-                // Кнопка настроек (в будущем)
-                Button(action: {
-                    appViewModel.navigateTo(.settings)
-                }) {
-                    Text("Settings")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(width: 150)
-                        .padding()
-                        .background(
-                            Capsule()
-                                .fill(Color.gray)
-                                .overlay(
-                                    Capsule()
-                                        .stroke(Color.white, lineWidth: 2)
-                                )
-                        )
+                MainButtonView(label: "Achieve", labelSize: 20) {
+//                    svm.play()
+//                    appViewModel.navigateTo(.achieve)
                 }
             }
+            .padding(.bottom, 40)
         }
     }
 }
@@ -98,4 +36,59 @@ struct MenuView: View {
 #Preview {
     MenuView()
         .environmentObject(AppViewModel())
+}
+
+struct EmblemView: View {
+    var body: some View {
+        VStack {
+            Image(.emblem)
+                .resizable()
+                .scaledToFit()
+                .frame(height: 110)
+            
+            Spacer()
+        }
+        .padding()
+    }
+}
+
+struct SidebarView: View {
+    @EnvironmentObject var appViewModel: AppViewModel
+    
+    var body: some View {
+        VStack {
+            HStack(alignment: .top) {
+                SquareButtonView(image: .gear) {
+                    //                        svm.play()
+                    appViewModel.navigateTo(.settings)
+                }
+                
+                Spacer()
+                
+                ScoreboardView(amount: appViewModel.coins)
+            }
+            
+            Spacer()
+            
+            HStack {
+                SquareButtonView(image: .joystick) {
+                    //                        svm.play()
+                    //                        appViewModel.navigateTo(.minigames)
+                }
+                
+                SquareButtonView(image: .i) {
+                    //                        svm.play()
+                    //                        appViewModel.navigateTo(.daily)
+                }
+                
+                Spacer()
+                
+                SquareButtonView(image: .shop) {
+                    //                        svm.play()
+                    //                        appViewModel.navigateTo(.shop)
+                }
+            }
+        }
+        .padding()
+    }
 }

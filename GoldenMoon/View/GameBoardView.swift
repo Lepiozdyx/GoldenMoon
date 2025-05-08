@@ -19,9 +19,19 @@ struct GameBoardView: View {
                 let nodeSize: CGFloat = maxRadius * 0.1
                 
                 // Фон игрового поля
-                Circle()
-                    .fill(Color.black.opacity(0.2))
+                Image(.medal)
+                    .resizable()
+                    .frame(width: maxRadius * 2.3, height: maxRadius * 2.3)
+                
+                Image(.desk)
+                    .resizable()
                     .frame(width: maxRadius * 2.2, height: maxRadius * 2.2)
+                    .overlay {
+                        Image(.moon)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 70)
+                    }
                 
                 // Рисуем кольца
                 ForEach([maxRadius, middleRadius, innerRadius], id: \.self) { radius in

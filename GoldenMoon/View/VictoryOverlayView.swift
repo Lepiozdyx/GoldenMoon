@@ -11,72 +11,35 @@ struct VictoryOverlayView: View {
     
     var body: some View {
         ZStack {
-            Color.black.opacity(0.7)
+            Color.black.opacity(0.8)
                 .edgesIgnoringSafeArea(.all)
             
             VStack(spacing: 20) {
-                Text("YOU WIN!")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .foregroundColor(.green)
+                Image(.win)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 85)
                 
                 if showCoins {
-                    HStack {
-                        Text("+10")
-                            .font(.headline)
-                            .foregroundColor(.yellow)
-                        
-                        Image(systemName: "bitcoinsign.circle.fill")
-                            .resizable()
-                            .frame(width: 30, height: 30)
-                            .foregroundColor(.yellow)
+                    ScoreboardView(amount: 100)
+                        .animation(.spring(response: 0.5, dampingFraction: 0.6, blendDuration: 1.0), value: showCoins)
+                }
+                
+                HStack(spacing: 20) {
+                    MainButtonView(label: "Menu", labelSize: 22, width: 150, height: 65) {
+                        guard !navigating else { return }
+                        navigating = true
+                        appViewModel.goToMenu()
                     }
-                    .scaleEffect(showCoins ? 1.5 : 1.0)
-                    .animation(.spring(response: 0.5, dampingFraction: 0.6, blendDuration: 1.0), value: showCoins)
-                }
-                
-                Button(action: {
-                    guard !navigating else { return }
-                    navigating = true
-                    appViewModel.goToNextLevel()
-                }) {
-                    Text("NEXT LEVEL")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 30)
-                        .padding(.vertical, 15)
-                        .background(
-                            Capsule()
-                                .fill(navigating ? Color.gray : Color.green)
-                                .overlay(
-                                    Capsule()
-                                        .stroke(Color.white, lineWidth: 2)
-                                )
-                        )
-                }
-                .disabled(navigating)
-                
-                Button(action: {
-                    guard !navigating else { return }
-                    navigating = true
+                    .disabled(navigating)
                     
-                    appViewModel.goToMenu()
-                }) {
-                    Text("MENU")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 30)
-                        .padding(.vertical, 15)
-                        .background(
-                            Capsule()
-                                .fill(navigating ? Color.gray : Color.blue)
-                                .overlay(
-                                    Capsule()
-                                        .stroke(Color.white, lineWidth: 2)
-                                )
-                        )
+                    MainButtonView(label: "Next lvl", labelSize: 22, width: 150, height: 65) {
+                        guard !navigating else { return }
+                        navigating = true
+                        appViewModel.goToNextLevel()
+                    }
+                    .disabled(navigating)
                 }
-                .disabled(navigating)
             }
         }
         .onAppear {

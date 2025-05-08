@@ -58,10 +58,7 @@ struct GameView: View {
                     SidePiecesView(
                         player: .player1,
                         piecesCount: 9 - viewModel.game.player1PlacedPieces,
-                        pieceSize: 20,
-                        onPieceSelected: {
-                            // В фазе расстановки выбор фишки просто сообщает, что нужно выбрать узел
-                        }
+                        pieceSize: 18
                     )
                 }
                 
@@ -72,8 +69,7 @@ struct GameView: View {
                     SidePiecesView(
                         player: .player2,
                         piecesCount: 9 - viewModel.game.player2PlacedPieces,
-                        pieceSize: 20,
-                        onPieceSelected: { }
+                        pieceSize: 18
                     )
                 }
             }

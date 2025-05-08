@@ -12,9 +12,7 @@ struct LoadingView: View {
     
     var body: some View {
         ZStack {
-            Image(.bgimg0)
-                .resizable()
-                .ignoresSafeArea()
+            BackgroundView(name: .bgimg0)
             
             VStack {
                 Spacer()
@@ -31,32 +29,34 @@ struct LoadingView: View {
                 
                 Spacer()
                 
-                Text("Loading")
-                    .customFont(20)
-                
-                Image(.buttonGroup2)
-                    .resizable()
-                    .frame(maxWidth: 280, maxHeight: 60)
-                    .foregroundStyle(.primary)
-                    .overlay(alignment: .leading) {
-                        RoundedRectangle(cornerRadius: 10)
-                            .frame(width: 242, height: 32)
-                            .offset(y: -2)
-                            .foregroundStyle(.asphalt)
-                            .padding()
-                    }
-                    .overlay(alignment: .leading) {
-                        RoundedRectangle(cornerRadius: 10)
-                            .frame(width: 242 * loading, height: 32)
-                            .offset(y: -2)
-                            .foregroundStyle(.green)
-                            .padding()
-                    }
+                VStack(spacing: 0) {
+                    Text("Loading")
+                        .customFont(20)
+                    
+                    Image(.buttonGroup2)
+                        .resizable()
+                        .frame(maxWidth: 280, maxHeight: 60)
+                        .foregroundStyle(.primary)
+                        .overlay(alignment: .leading) {
+                            RoundedRectangle(cornerRadius: 10)
+                                .frame(width: 242, height: 32)
+                                .offset(y: -2)
+                                .foregroundStyle(.asphalt)
+                                .padding()
+                        }
+                        .overlay(alignment: .leading) {
+                            RoundedRectangle(cornerRadius: 10)
+                                .frame(width: 242 * loading, height: 32)
+                                .offset(y: -2)
+                                .foregroundStyle(.green)
+                                .padding()
+                        }
+                }
             }
             .padding()
         }
         .onAppear {
-            withAnimation(.linear(duration: 1.5)) {
+            withAnimation(.linear(duration: 1.3)) {
                 loading = 1
             }
         }

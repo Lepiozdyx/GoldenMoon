@@ -9,68 +9,24 @@ struct PauseOverlayView: View {
     
     var body: some View {
         ZStack {
-            Color.black.opacity(0.7)
+            Color.black.opacity(0.8)
                 .edgesIgnoringSafeArea(.all)
             
-            VStack(spacing: 20) {
+            VStack(spacing: 15) {
                 Text("PAUSED")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .foregroundColor(.white)
+                    .customFont(36)
                 
-                Button(action: {
+                MainButtonView(label: "Resume", labelSize: 22, width: 150, height: 65) {
                     appViewModel.millGameViewModel?.resumeGame()
-                }) {
-                    Text("RESUME")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 30)
-                        .padding(.vertical, 15)
-                        .background(
-                            Capsule()
-                                .fill(Color.green)
-                                .overlay(
-                                    Capsule()
-                                        .stroke(Color.white, lineWidth: 2)
-                                )
-                        )
                 }
                 
-                Button(action: {
+                MainButtonView(label: "Restart", labelSize: 22, width: 150, height: 65) {
                     appViewModel.millGameViewModel?.resetGame()
                     appViewModel.millGameViewModel?.resumeGame()
-                }) {
-                    Text("RESTART")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 30)
-                        .padding(.vertical, 15)
-                        .background(
-                            Capsule()
-                                .fill(Color.blue)
-                                .overlay(
-                                    Capsule()
-                                        .stroke(Color.white, lineWidth: 2)
-                                )
-                        )
                 }
                 
-                Button(action: {
+                MainButtonView(label: "Menu", labelSize: 22, width: 150, height: 65) {
                     appViewModel.goToMenu()
-                }) {
-                    Text("MENU")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 30)
-                        .padding(.vertical, 15)
-                        .background(
-                            Capsule()
-                                .fill(Color.red)
-                                .overlay(
-                                    Capsule()
-                                        .stroke(Color.white, lineWidth: 2)
-                                )
-                        )
                 }
             }
         }

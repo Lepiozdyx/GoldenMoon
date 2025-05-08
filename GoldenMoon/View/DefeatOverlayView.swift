@@ -9,50 +9,23 @@ struct DefeatOverlayView: View {
     
     var body: some View {
         ZStack {
-            Color.black.opacity(0.7)
+            Color.black.opacity(0.8)
                 .edgesIgnoringSafeArea(.all)
             
             VStack(spacing: 20) {
                 Text("GAME OVER")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .foregroundColor(.red)
+                    .customFont(36)
+                    .colorMultiply(.red)
                 
-                Button(action: {
-                    appViewModel.millGameViewModel?.resetGame()
-                    appViewModel.millGameViewModel?.resumeGame()
-                }) {
-                    Text("TRY AGAIN")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 30)
-                        .padding(.vertical, 15)
-                        .background(
-                            Capsule()
-                                .fill(Color.green)
-                                .overlay(
-                                    Capsule()
-                                        .stroke(Color.white, lineWidth: 2)
-                                )
-                        )
-                }
-                
-                Button(action: {
-                    appViewModel.goToMenu()
-                }) {
-                    Text("MENU")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 30)
-                        .padding(.vertical, 15)
-                        .background(
-                            Capsule()
-                                .fill(Color.blue)
-                                .overlay(
-                                    Capsule()
-                                        .stroke(Color.white, lineWidth: 2)
-                                )
-                        )
+                HStack(spacing: 20) {
+                    MainButtonView(label: "Menu", labelSize: 22, width: 150, height: 65) {
+                        appViewModel.goToMenu()
+                    }
+                    
+                    MainButtonView(label: "Restart", labelSize: 22, width: 150, height: 65) {
+                        appViewModel.millGameViewModel?.resetGame()
+                        appViewModel.millGameViewModel?.resumeGame()
+                    }
                 }
             }
         }
