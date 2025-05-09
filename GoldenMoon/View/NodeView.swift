@@ -13,17 +13,13 @@ struct NodeView: View {
         ZStack {
             // Фон узла
             Circle()
-                .fill(node.isHighlighted ? Color.yellow.opacity(0.3) : Color.clear)
+                .fill(node.isHighlighted ? Color.yellow.opacity(0.7) : Color.clear)
                 .frame(width: nodeSize * 1.5, height: nodeSize * 1.5)
             
             // Сам узел
             Circle()
-                .stroke(Color.white, lineWidth: 2)
+                .foregroundStyle(.coffe)
                 .frame(width: nodeSize, height: nodeSize)
-                .background(
-                    Circle()
-                        .fill(node.isHighlighted ? Color.yellow.opacity(0.5) : Color.black.opacity(0.3))
-                )
                 .overlay(
                     node.piece != nil ?
                     Circle()

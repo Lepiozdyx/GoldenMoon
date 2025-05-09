@@ -10,13 +10,7 @@ struct GameView: View {
     
     var body: some View {
         ZStack {
-            // Фон
-            LinearGradient(
-                gradient: Gradient(colors: [Color.purple.opacity(0.6), Color.black]),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+            BackgroundView(name: .bgimg1)
             
             // Верхняя информационная панель
             VStack {
@@ -52,84 +46,58 @@ struct GameView: View {
             }
             .padding()
             
-            HStack(spacing: 0) {
-                // Левая панель фишек (игрок)
-                if viewModel.game.phase == .placement {
-                    SidePiecesView(
-                        player: .player1,
-                        piecesCount: 9 - viewModel.game.player1PlacedPieces,
-                        pieceSize: 18
-                    )
-                }
-                
+            // Панель фишек
+            VStack {
                 Spacer()
                 
-                // Правая панель фишек (оппонент)
-                if viewModel.game.phase == .placement {
-                    SidePiecesView(
-                        player: .player2,
-                        piecesCount: 9 - viewModel.game.player2PlacedPieces,
-                        pieceSize: 18
-                    )
+                HStack {
+                    // Левая панель фишек (игрок)
+                    if viewModel.game.phase == .placement {
+                        SidePiecesView(
+                            player: .player1,
+                            piecesCount: 9 - viewModel.game.player1PlacedPieces,
+                            pieceSize: 18
+                        )
+                    }
+                    
+                    Spacer()
+                    
+                    // Правая панель фишек (оппонент)
+                    if viewModel.game.phase == .placement {
+                        SidePiecesView(
+                            player: .player2,
+                            piecesCount: 9 - viewModel.game.player2PlacedPieces,
+                            pieceSize: 18
+                        )
+                    }
                 }
             }
+            .padding()
             
             // Игровое поле
-            GameBoardView(viewModel: viewModel, onNodeTap: { nodeId in
+            GameBoardView(viewModel: viewModel) { nodeId in
                 viewModel.handleNodeTap(nodeId)
-            })
+            }
             .padding()
             
             // Нижняя панель с кнопками
             VStack {
                 Spacer()
+                
                 HStack {
-                    // Счетчики фишек
-                    VStack(alignment: .leading) {
-                        Text("Your pieces: \(viewModel.game.player1Pieces)")
-                            .foregroundColor(.white)
-                        Text("Opponent's pieces: \(viewModel.game.player2Pieces)")
-                            .foregroundColor(.white)
+                    Spacer()
+                    // Кнопки
+                    MainButtonView(label: "Back", labelSize: 16, width: 100, height: 50) {
+                        viewModel.pauseGame()
                     }
                     
                     Spacer()
                     
-                    // Кнопки
-                    Button(action: {
-                        viewModel.pauseGame()
-                    }) {
-                        Text("BACK")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 20)
-                            .padding(.vertical, 10)
-                            .background(
-                                Capsule()
-                                    .fill(Color.blue)
-                                    .overlay(
-                                        Capsule()
-                                            .stroke(Color.white, lineWidth: 1)
-                                    )
-                            )
+                    MainButtonView(label: "Give up", labelSize: 16, width: 100, height: 50) {
+                        viewModel.game.resetGame()
                     }
                     
-                    Button(action: {
-                        viewModel.game.resetGame()
-                    }) {
-                        Text("GIVE UP")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 20)
-                            .padding(.vertical, 10)
-                            .background(
-                                Capsule()
-                                    .fill(Color.red)
-                                    .overlay(
-                                        Capsule()
-                                            .stroke(Color.white, lineWidth: 1)
-                                    )
-                            )
-                    }
+                    Spacer()
                 }
             }
             .padding()
