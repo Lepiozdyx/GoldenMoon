@@ -51,23 +51,25 @@ struct GameView: View {
                 Spacer()
                 
                 HStack {
-                    // Левая панель фишек (игрок)
+                    // Левая панель фишек (игрок 1)
                     if viewModel.game.phase == .placement {
                         SidePiecesView(
                             player: .player1,
                             piecesCount: 9 - viewModel.game.player1PlacedPieces,
-                            pieceSize: 18
+                            pieceSize: 18,
+                            gameMode: viewModel.game.gameMode  // Передаем режим игры
                         )
                     }
                     
                     Spacer()
                     
-                    // Правая панель фишек (оппонент)
+                    // Правая панель фишек (игрок 2)
                     if viewModel.game.phase == .placement {
                         SidePiecesView(
                             player: .player2,
                             piecesCount: 9 - viewModel.game.player2PlacedPieces,
-                            pieceSize: 18
+                            pieceSize: 18,
+                            gameMode: viewModel.game.gameMode  // Передаем режим игры
                         )
                     }
                 }
@@ -78,7 +80,7 @@ struct GameView: View {
             GameBoardView(viewModel: viewModel) { nodeId in
                 viewModel.handleNodeTap(nodeId)
             }
-            .padding()
+            .frame(maxWidth: 450, maxHeight: 450)
             
             // Нижняя панель с кнопками
             VStack {

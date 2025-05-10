@@ -11,27 +11,35 @@ struct GameBoardView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                // Определяем центр и размеры
+                // Определяем центр и базовые размеры
                 let center = CGPoint(x: geometry.size.width / 2, y: geometry.size.height / 2)
-                let maxRadius = min(geometry.size.width, geometry.size.height) * 0.4
-                let middleRadius = maxRadius * 0.66
-                let innerRadius = maxRadius * 0.33
-                let nodeSize: CGFloat = maxRadius * 0.1
+                // Установим фиксированный максимальный размер для игрового поля
+                let boardSize = min(geometry.size.width, geometry.size.height) * 0.8
                 
                 // Фон игрового поля
                 Image(.medal)
                     .resizable()
-                    .frame(width: maxRadius * 2.3, height: maxRadius * 2.3)
+                    .frame(width: boardSize * 1.15, height: boardSize * 1.15)
+                    .position(center)
                 
+                // Основа игрового поля
                 Image(.desk)
                     .resizable()
-                    .frame(width: maxRadius * 2.2, height: maxRadius * 2.2)
+                    .frame(width: boardSize * 1.1, height: boardSize * 1.1)
+                    .position(center)
+                
+                // Размещаем игровое поле
+                let maxRadius = boardSize * 0.35
+                let middleRadius = maxRadius * 0.66
+                let innerRadius = maxRadius * 0.33
+                let nodeSize: CGFloat = maxRadius * 0.18
                 
                 // Рисуем кольца
                 ForEach([maxRadius, middleRadius, innerRadius], id: \.self) { radius in
                     Circle()
-                        .stroke(Color.coffe, lineWidth: 6)
+                        .stroke(Color.coffe, lineWidth: 4)
                         .frame(width: radius * 2, height: radius * 2)
+                        .position(center)
                 }
                 
                 // Рисуем радиальные линии
@@ -44,12 +52,14 @@ struct GameBoardView: View {
                     path.move(to: CGPoint(x: center.x, y: center.y - maxRadius))
                     path.addLine(to: CGPoint(x: center.x, y: center.y + maxRadius))
                 }
-                .stroke(Color.coffe, lineWidth: 6)
+                .stroke(Color.coffe, lineWidth: 4)
                 
+                // Центральный элемент (луна)
                 Image(.moon)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 70)
+                    .frame(width: innerRadius)
+                    .position(center)
                 
                 // Подсвечиваем мельницы
                 if let lastMillNodeId = viewModel.game.lastMillFormedAt,
@@ -61,7 +71,13 @@ struct GameBoardView: View {
                                 
                                 for nodeId in mill {
                                     if let node = viewModel.game.board.getNode(id: nodeId) {
-                                        let nodePosition = getNodePosition(node: node, center: center, maxRadius: maxRadius, middleRadius: middleRadius, innerRadius: innerRadius)
+                                        let nodePosition = getNodePosition(
+                                            node: node,
+                                            center: center,
+                                            maxRadius: maxRadius,
+                                            middleRadius: middleRadius,
+                                            innerRadius: innerRadius
+                                        )
                                         
                                         if isFirstPoint {
                                             path.move(to: nodePosition)
@@ -71,22 +87,21 @@ struct GameBoardView: View {
                                         }
                                     }
                                 }
-                                
-                                // Замыкаем путь, если это треугольник
-                                if mill.count == 3, let firstNodeId = mill.first,
-                                   let firstNode = viewModel.game.board.getNode(id: firstNodeId) {
-                                    let firstPosition = getNodePosition(node: firstNode, center: center, maxRadius: maxRadius, middleRadius: middleRadius, innerRadius: innerRadius)
-                                    path.addLine(to: firstPosition)
-                                }
                             }
                             .stroke(viewModel.game.currentPlayer == .player1 ? Color.red.opacity(0.7) : Color.blue.opacity(0.7), lineWidth: 4)
                         }
                     }
                 }
                 
-                // Размещаем узлы с анимацией для переходов
+                // Размещаем узлы
                 ForEach(viewModel.game.board.nodes) { node in
-                    let nodePosition = getNodePosition(node: node, center: center, maxRadius: maxRadius, middleRadius: middleRadius, innerRadius: innerRadius)
+                    let nodePosition = getNodePosition(
+                        node: node,
+                        center: center,
+                        maxRadius: maxRadius,
+                        middleRadius: middleRadius,
+                        innerRadius: innerRadius
+                    )
                     
                     NodeView(node: node, nodeSize: nodeSize, onTap: {
                         onNodeTap(node.id)

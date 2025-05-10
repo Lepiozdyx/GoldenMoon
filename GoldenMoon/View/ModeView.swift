@@ -40,22 +40,15 @@ struct ModeView: View {
             }
             .padding()
             
-            VStack(spacing: 10) {
-                HStack(spacing: 10) {
-                    MainButtonView(label: "Solo", labelSize: 20) {
-    //                    svm.play()
-                        appViewModel.startGame(mode: .vsAI)
-                    }
-                    
-                    MainButtonView(label: "Two Players", labelSize: 20) {
-    //                    svm.play()
-                        appViewModel.startGame(mode: .twoPlayers)
-                    }
+            HStack(spacing: 60) {
+                MainButtonView(label: "Solo", labelSize: 20) {
+                    //                    svm.play()
+                    appViewModel.startGame(mode: .vsAI)
                 }
                 
-                MainButtonView(label: "Tutorial", labelSize: 20) {
-//                    svm.play()
-                    appViewModel.startGame(mode: .tutorial)
+                MainButtonView(label: "Two Players", labelSize: 20) {
+                    //                    svm.play()
+                    appViewModel.startGame(mode: .twoPlayers)
                 }
             }
             .padding(.top, 80)
