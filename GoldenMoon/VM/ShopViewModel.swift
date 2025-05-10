@@ -122,6 +122,12 @@ class ShopViewModel: ObservableObject {
         currentBackground = background
         
         saveState()
+        
+        Task { @MainActor in
+            if let achievementViewModel = appViewModel.achievementViewModel {
+                achievementViewModel.checkAchievements(shopViewModel: self)
+            }
+        }
     }
     
     func selectBackground(_ background: ImageResource) {
@@ -143,6 +149,12 @@ class ShopViewModel: ObservableObject {
         currentChipSkin = skin
         
         saveState()
+        
+        Task { @MainActor in
+            if let achievementViewModel = appViewModel.achievementViewModel {
+                achievementViewModel.checkAchievements(shopViewModel: self)
+            }
+        }
     }
     
     func selectChipSkin(_ skin: (player1: ImageResource, player2: ImageResource)) {

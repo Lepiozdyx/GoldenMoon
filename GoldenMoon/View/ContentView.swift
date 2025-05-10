@@ -6,6 +6,7 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var appViewModel = AppViewModel()
+    @StateObject private var achievementViewModel = AchievementViewModel()
     
     var body: some View {
         ZStack {
@@ -36,6 +37,10 @@ struct ContentView: View {
                 RewardView()
                     .environmentObject(appViewModel)
             }
+        }
+        .onAppear {
+            appViewModel.achievementViewModel = achievementViewModel
+            achievementViewModel.appViewModel = appViewModel
         }
     }
 }

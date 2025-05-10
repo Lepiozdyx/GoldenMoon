@@ -14,18 +14,24 @@ enum AppScreen {
     case reward
 }
 
+@MainActor
 class AppViewModel: ObservableObject {
     @Published var currentScreen: AppScreen = .menu
     @Published var millGameViewModel: MillGameViewModel?
-    @Published var coins: Int = 0
+    @Published var coins: Int = 0 {
+        didSet {
+            checkAchievementsAsync()
+        }
+    }
     @Published var currentLevel: Int = 1
+    @Published var currentBackground: ImageResource = .bgimg1
+    @Published var currentChipSkin: (player1: ImageResource, player2: ImageResource) = (.chip1, .chip11)
+    @Published var totalGamesPlayed: Int = 0
+    @Published var achievementViewModel: AchievementViewModel?
     
     // Daily reward properties
     @Published var remainingTime: String = ""
     @Published var isRewardAvailable: Bool = false
-    
-    @Published var currentBackground: ImageResource = .bgimg1
-    @Published var currentChipSkin: (player1: ImageResource, player2: ImageResource) = (.chip1, .chip11)
     
     private var rewardTimer: AnyCancellable?
     private let dailyRewardAmount: Int = 10
@@ -43,6 +49,7 @@ class AppViewModel: ObservableObject {
     private let millsFormedKey = "goldenMoon.millsFormed"
     private let maxCompletedLevelKey = "goldenMoon.maxCompletedLevel"
     private let lastDailyRewardKey = "goldenMoon.lastDailyReward"
+    private let totalGamesPlayedKey = "goldenMoon.totalGamesPlayed"
     
     init() {
         // Загрузка сохраненных данных
@@ -51,6 +58,7 @@ class AppViewModel: ObservableObject {
         self.levelsCompleted = UserDefaults.standard.integer(forKey: levelsCompletedKey)
         self.millsFormed = UserDefaults.standard.integer(forKey: millsFormedKey)
         self.maxCompletedLevel = UserDefaults.standard.integer(forKey: maxCompletedLevelKey)
+        self.totalGamesPlayed = UserDefaults.standard.integer(forKey: totalGamesPlayedKey)
         
         // Загрузка даты последнего получения награды
         if let dateData = UserDefaults.standard.data(forKey: lastDailyRewardKey),
@@ -70,6 +78,16 @@ class AppViewModel: ObservableObject {
     
     deinit {
         rewardTimer?.cancel()
+    }
+    
+    // MARK: - Achievement Check
+    
+    private func checkAchievementsAsync() {
+        Task { @MainActor in
+            if let achievementViewModel = achievementViewModel {
+                achievementViewModel.checkAchievements()
+            }
+        }
     }
     
     // MARK: - Daily Reward Methods
@@ -163,6 +181,7 @@ class AppViewModel: ObservableObject {
         let reward = 10
         coins += reward
         levelsCompleted += 1
+        totalGamesPlayed += 1
         
         // Обновляем данные о максимальном пройденном уровне
         if currentLevel > maxCompletedLevel {
@@ -177,13 +196,20 @@ class AppViewModel: ObservableObject {
         
         // Сохраняем данные
         saveGameState()
+        
+        // Проверяем достижения
+        checkAchievementsAsync()
     }
     
     func showDefeat() {
         // Можно добавить небольшую награду за попытку
         let consolationReward = 1
         coins += consolationReward
+        totalGamesPlayed += 1
         saveGameState()
+        
+        // Проверяем достижения
+        checkAchievementsAsync()
     }
     
     func addCoins(_ amount: Int) {
@@ -231,6 +257,7 @@ class AppViewModel: ObservableObject {
         UserDefaults.standard.set(levelsCompleted, forKey: levelsCompletedKey)
         UserDefaults.standard.set(millsFormed, forKey: millsFormedKey)
         UserDefaults.standard.set(maxCompletedLevel, forKey: maxCompletedLevelKey)
+        UserDefaults.standard.set(totalGamesPlayed, forKey: totalGamesPlayedKey)
         
         // Сохраняем дату последнего получения награды
         if let date = lastDailyRewardClaimDate,
@@ -247,6 +274,7 @@ class AppViewModel: ObservableObject {
         levelsCompleted = 0
         millsFormed = 0
         maxCompletedLevel = 0
+        totalGamesPlayed = 0
         lastDailyRewardClaimDate = nil
         
         UserDefaults.standard.removeObject(forKey: coinsKey)
@@ -254,6 +282,7 @@ class AppViewModel: ObservableObject {
         UserDefaults.standard.removeObject(forKey: levelsCompletedKey)
         UserDefaults.standard.removeObject(forKey: millsFormedKey)
         UserDefaults.standard.removeObject(forKey: maxCompletedLevelKey)
+        UserDefaults.standard.removeObject(forKey: totalGamesPlayedKey)
         UserDefaults.standard.removeObject(forKey: lastDailyRewardKey)
         UserDefaults.standard.synchronize()
     }

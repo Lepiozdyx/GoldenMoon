@@ -10,6 +10,7 @@ import SwiftUI
 struct AchievementsView: View {
     @EnvironmentObject private var appViewModel: AppViewModel
     @StateObject private var settings = SettingsViewModel.shared
+    @StateObject private var achievementViewModel = AchievementViewModel()
     
     var body: some View {
         ZStack {
@@ -42,7 +43,8 @@ struct AchievementsView: View {
                 VStack(spacing: 30) {
                     HStack {
                         Button {
-                            // previous achievement
+                            settings.play()
+                            achievementViewModel.previousAchievement()
                         } label: {
                             Image(.buttonGroupArrow)
                                 .resizable()
@@ -51,16 +53,39 @@ struct AchievementsView: View {
                         }
                         
                         HStack {
-                            // achievements carousel [.achi1, .achi2, .achi3, .achi4]
-                            Image(.achi1)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 150)
+                            // Карусель достижений
+                            if achievementViewModel.currentIndex < Achievement.all.count {
+                                let achievement = Achievement.all[achievementViewModel.currentIndex]
+                                let isUnlocked = achievementViewModel.isAchievementUnlocked(achievement.id)
+                                
+                                VStack(spacing: 2) {
+                                    Image(achievement.image)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 150)
+                                        .opacity(isUnlocked ? 1.0 : 0.5)
+                                    
+                                    Text(achievement.title)
+                                        .customFont(12)
+                                        .opacity(isUnlocked ? 1.0 : 0.7)
+                                    
+                                    Text(achievement.description)
+                                        .customFont(8)
+                                        .multilineTextAlignment(.center)
+                                        .opacity(isUnlocked ? 1.0 : 0.7)
+                                }
+                                .transition(.asymmetric(
+                                    insertion: .move(edge: .trailing).combined(with: .opacity),
+                                    removal: .move(edge: .leading).combined(with: .opacity)
+                                ))
+                            }
                         }
                         .frame(width: 250)
+                        .animation(.easeInOut(duration: 0.3), value: achievementViewModel.currentIndex)
 
                         Button {
-                            // next achievement
+                            settings.play()
+                            achievementViewModel.nextAchievement()
                         } label: {
                             Image(.buttonGroupArrow)
                                 .resizable()
@@ -70,6 +95,14 @@ struct AchievementsView: View {
                         }
                     }
                     
+                    // Индикаторы страниц
+                    HStack(spacing: 8) {
+                        ForEach(0..<Achievement.all.count, id: \.self) { index in
+                            Circle()
+                                .fill(index == achievementViewModel.currentIndex ? Color.yellow : Color.gray)
+                                .frame(width: 8, height: 8)
+                        }
+                    }
                 }
                 .padding(.horizontal, 80)
                 .padding(.vertical, 40)
@@ -81,8 +114,11 @@ struct AchievementsView: View {
                 Spacer()
             }
             .padding()
-            
-            
+        }
+        .onAppear {
+            achievementViewModel.appViewModel = appViewModel
+            appViewModel.achievementViewModel = achievementViewModel
+            achievementViewModel.checkAchievements()
         }
     }
 }
