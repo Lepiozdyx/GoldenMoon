@@ -23,6 +23,8 @@ struct RewardView: View {
                     }
                     
                     Spacer()
+                    
+                    ScoreboardView(amount: appViewModel.coins)
                 }
                 Spacer()
             }
@@ -36,28 +38,43 @@ struct RewardView: View {
                     .resizable()
                     .frame(width: 120, height: 120)
                 
-                MainButtonView(label: "+10", labelSize: 16, width: 150, height: 50) {
-                    settings.play()
-                    // get daily reward
+                MainButtonView(
+                    label: appViewModel.isRewardAvailable ? "+10" : appViewModel.remainingTime,
+                    labelSize: 16,
+                    width: 150,
+                    height: 50
+                ) {
+                    if appViewModel.isRewardAvailable {
+                        settings.play()
+                        _ = appViewModel.claimDailyReward()
+                    }
                 }
                 .overlay {
-                    Image(.coin)
-                        .resizable()
-                        .frame(width: 30, height: 30)
-                        .offset(x: 45, y: -2)
+                    if appViewModel.isRewardAvailable {
+                        Image(.coin)
+                            .resizable()
+                            .frame(width: 30, height: 30)
+                            .offset(x: 45, y: -2)
+                    }
                 }
+                .disabled(!appViewModel.isRewardAvailable)
+                .opacity(appViewModel.isRewardAvailable ? 1.0 : 0.6)
             }
             .frame(width: 250)
             .padding(.horizontal, 80)
-            .padding(.vertical, 50)
+            .padding(.vertical, 40)
             .background(
                 Image(.frame)
                     .resizable()
             )
+        }
+        .onAppear {
+            appViewModel.updateDailyRewardState()
         }
     }
 }
 
 #Preview {
     RewardView()
+        .environmentObject(AppViewModel())
 }

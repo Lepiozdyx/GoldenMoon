@@ -6,6 +6,7 @@ import SwiftUI
 
 struct MenuView: View {
     @EnvironmentObject var appViewModel: AppViewModel
+    @StateObject private var settings = SettingsViewModel.shared
     
     var body: some View {
         ZStack {
@@ -19,13 +20,13 @@ struct MenuView: View {
                 Spacer()
                 
                 MainButtonView(label: "Play", labelSize: 20) {
-//                    svm.play()
+                    settings.play()
 //                    appViewModel.navigateTo(.mode)
                 }
                 
                 MainButtonView(label: "Achieve", labelSize: 20) {
-//                    svm.play()
-//                    appViewModel.navigateTo(.achieve)
+                    settings.play()
+                    appViewModel.navigateTo(.achievements)
                 }
             }
             .padding(.bottom, 40)
@@ -54,12 +55,13 @@ struct EmblemView: View {
 
 struct SidebarView: View {
     @EnvironmentObject var appViewModel: AppViewModel
+    @StateObject private var settings = SettingsViewModel.shared
     
     var body: some View {
         VStack {
             HStack(alignment: .top) {
                 SquareButtonView(image: .gear) {
-                    //                        svm.play()
+                    settings.play()
                     appViewModel.navigateTo(.settings)
                 }
                 
@@ -72,20 +74,20 @@ struct SidebarView: View {
             
             HStack {
                 SquareButtonView(image: .joystick) {
-                    //                        svm.play()
+                    settings.play()
                     //                        appViewModel.navigateTo(.minigames)
                 }
                 
                 SquareButtonView(image: .i) {
-                    //                        svm.play()
-                    //                        appViewModel.navigateTo(.daily)
+                    settings.play()
+                    appViewModel.navigateTo(.reward)
                 }
                 
                 Spacer()
                 
                 SquareButtonView(image: .shop) {
-                    //                        svm.play()
-                    //                        appViewModel.navigateTo(.shop)
+                    settings.play()
+                    appViewModel.navigateTo(.shop)
                 }
             }
         }

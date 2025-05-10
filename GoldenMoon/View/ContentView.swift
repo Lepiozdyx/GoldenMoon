@@ -21,11 +21,20 @@ struct ContentView: View {
                 }
                 
             case .settings:
-                Text("Settings view (Coming soon)")
-                    .font(.largeTitle)
-                    .onTapGesture {
-                        appViewModel.navigateTo(.menu)
-                    }
+                SettingsView()
+                    .environmentObject(appViewModel)
+                
+            case .shop:
+                ShopView()
+                    .environmentObject(appViewModel)
+                
+            case .achievements:
+                AchievementsView()
+                    .environmentObject(appViewModel)
+                
+            case .reward:
+                RewardView()
+                    .environmentObject(appViewModel)
             }
         }
     }

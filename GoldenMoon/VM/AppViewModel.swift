@@ -9,6 +9,9 @@ enum AppScreen {
     case menu
     case game
     case settings
+    case shop
+    case achievements
+    case reward
 }
 
 class AppViewModel: ObservableObject {
@@ -17,10 +20,18 @@ class AppViewModel: ObservableObject {
     @Published var coins: Int = 0
     @Published var currentLevel: Int = 1
     
+    // Daily reward properties
+    @Published var remainingTime: String = ""
+    @Published var isRewardAvailable: Bool = false
+    
+    private var rewardTimer: AnyCancellable?
+    private let dailyRewardAmount: Int = 10
+    
     // Данные для сохранения прогресса
     private var levelsCompleted: Int = 0
     private var millsFormed: Int = 0
     private var maxCompletedLevel: Int = 0
+    private var lastDailyRewardClaimDate: Date?
     
     // UserDefaults ключи
     private let coinsKey = "goldenMoon.coins"
@@ -28,6 +39,7 @@ class AppViewModel: ObservableObject {
     private let levelsCompletedKey = "goldenMoon.levelsCompleted"
     private let millsFormedKey = "goldenMoon.millsFormed"
     private let maxCompletedLevelKey = "goldenMoon.maxCompletedLevel"
+    private let lastDailyRewardKey = "goldenMoon.lastDailyReward"
     
     init() {
         // Загрузка сохраненных данных
@@ -37,11 +49,94 @@ class AppViewModel: ObservableObject {
         self.millsFormed = UserDefaults.standard.integer(forKey: millsFormedKey)
         self.maxCompletedLevel = UserDefaults.standard.integer(forKey: maxCompletedLevelKey)
         
+        // Загрузка даты последнего получения награды
+        if let dateData = UserDefaults.standard.data(forKey: lastDailyRewardKey),
+           let date = try? JSONDecoder().decode(Date.self, from: dateData) {
+            self.lastDailyRewardClaimDate = date
+        }
+        
         // Установка минимальных значений
         if self.currentLevel < 1 {
             self.currentLevel = 1
         }
+        
+        // Инициализация ежедневных наград
+        updateDailyRewardState()
+        startDailyRewardTimer()
     }
+    
+    deinit {
+        rewardTimer?.cancel()
+    }
+    
+    // MARK: - Daily Reward Methods
+    
+    func claimDailyReward() -> Bool {
+        guard isRewardAvailable else { return false }
+        
+        // Добавляем монеты
+        coins += dailyRewardAmount
+        
+        // Сохраняем текущую дату
+        lastDailyRewardClaimDate = Date()
+        
+        // Сохраняем в UserDefaults
+        saveGameState()
+        
+        // Обновляем состояние
+        updateDailyRewardState()
+        
+        return true
+    }
+    
+    func updateDailyRewardState() {
+        let lastClaimDate = lastDailyRewardClaimDate
+        
+        if let lastDate = lastClaimDate {
+            let isToday = Calendar.current.isDateInToday(lastDate)
+            isRewardAvailable = !isToday
+            
+            if isToday {
+                let remainingSeconds = calculateRemainingTime(from: lastDate)
+                remainingTime = formatRemainingTime(remainingSeconds)
+            } else {
+                remainingTime = "Available"
+            }
+        } else {
+            isRewardAvailable = true
+            remainingTime = "Available"
+        }
+    }
+    
+    private func startDailyRewardTimer() {
+        rewardTimer?.cancel()
+        rewardTimer = Timer.publish(every: 60.0, on: .main, in: .common)
+            .autoconnect()
+            .sink { [weak self] _ in
+                self?.updateDailyRewardState()
+            }
+    }
+    
+    private func calculateRemainingTime(from date: Date) -> TimeInterval {
+        let calendar = Calendar.current
+        guard let tomorrow = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: date)) else {
+            return 0
+        }
+        return max(0, tomorrow.timeIntervalSince(Date()))
+    }
+    
+    private func formatRemainingTime(_ timeInterval: TimeInterval) -> String {
+        if timeInterval <= 0 {
+            return "Available"
+        }
+        
+        let hours = Int(timeInterval) / 3600
+        let minutes = (Int(timeInterval) % 3600) / 60
+        
+        return String(format: "%02d:%02d", hours, minutes)
+    }
+    
+    // MARK: - Navigation
     
     func navigateTo(_ screen: AppScreen) {
         currentScreen = screen
@@ -57,6 +152,8 @@ class AppViewModel: ObservableObject {
         millGameViewModel = nil
         navigateTo(.menu)
     }
+    
+    // MARK: - Game State
     
     func showVictory() {
         // Базовая награда за победу
@@ -99,9 +196,6 @@ class AppViewModel: ObservableObject {
         saveGameState()
         
         // Создаем новую игру с новым уровнем
-        // Для игры "Мельница" мы можем добавить различные начальные конфигурации или усложнения
-        // в зависимости от уровня, но для базовой реализации просто перезапускаем игру
-        
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             
@@ -109,12 +203,6 @@ class AppViewModel: ObservableObject {
             let gameMode = self.millGameViewModel?.game.gameMode ?? .twoPlayers
             self.millGameViewModel = MillGameViewModel(gameMode: gameMode)
             self.millGameViewModel?.appViewModel = self
-            
-            // Увеличиваем сложность AI по мере прохождения уровней (если это режим против AI)
-            if gameMode == .vsAI {
-                // Здесь можно реализовать логику изменения сложности
-                // В зависимости от уровня
-            }
             
             // Обновляем UI чтобы отразить изменения
             self.objectWillChange.send()
@@ -140,6 +228,13 @@ class AppViewModel: ObservableObject {
         UserDefaults.standard.set(levelsCompleted, forKey: levelsCompletedKey)
         UserDefaults.standard.set(millsFormed, forKey: millsFormedKey)
         UserDefaults.standard.set(maxCompletedLevel, forKey: maxCompletedLevelKey)
+        
+        // Сохраняем дату последнего получения награды
+        if let date = lastDailyRewardClaimDate,
+           let encoded = try? JSONEncoder().encode(date) {
+            UserDefaults.standard.set(encoded, forKey: lastDailyRewardKey)
+        }
+        
         UserDefaults.standard.synchronize()
     }
     
@@ -149,12 +244,14 @@ class AppViewModel: ObservableObject {
         levelsCompleted = 0
         millsFormed = 0
         maxCompletedLevel = 0
+        lastDailyRewardClaimDate = nil
         
         UserDefaults.standard.removeObject(forKey: coinsKey)
         UserDefaults.standard.removeObject(forKey: currentLevelKey)
         UserDefaults.standard.removeObject(forKey: levelsCompletedKey)
         UserDefaults.standard.removeObject(forKey: millsFormedKey)
         UserDefaults.standard.removeObject(forKey: maxCompletedLevelKey)
+        UserDefaults.standard.removeObject(forKey: lastDailyRewardKey)
         UserDefaults.standard.synchronize()
     }
 }
