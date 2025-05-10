@@ -15,31 +15,13 @@ struct GameView: View {
             // Верхняя информационная панель
             VStack {
                 HStack {
-                    Text(viewModel.getPhaseText())
-                        .font(.headline)
-                        .foregroundColor(.white)
-                    
-                    Spacer()
-                    
                     Text(viewModel.getCurrentPlayerName())
-                        .font(.headline)
-                        .foregroundColor(viewModel.game.currentPlayer == .player1 ? .red : .blue)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 5)
-                        .background(
-                            Capsule()
-                                .fill(Color.black.opacity(0.3))
-                                .overlay(
-                                    Capsule()
-                                        .stroke(Color.white, lineWidth: 1)
-                                )
-                        )
+                        .customFont(14)
                     
                     Spacer()
                     
                     Text(viewModel.getActionText())
-                        .font(.headline)
-                        .foregroundColor(.white)
+                        .customFont(14)
                 }
                 
                 Spacer()

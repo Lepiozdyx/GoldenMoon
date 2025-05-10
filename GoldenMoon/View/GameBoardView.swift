@@ -42,19 +42,26 @@ struct GameBoardView: View {
                         .position(center)
                 }
                 
-                // Рисуем радиальные линии
+                // Рисуем радиальные линии с разрывом во внутреннем кольце
                 Path { path in
-                    // Горизонтальная линия
+                    // Горизонтальная линия (левая часть)
                     path.move(to: CGPoint(x: center.x - maxRadius, y: center.y))
+                    path.addLine(to: CGPoint(x: center.x - innerRadius, y: center.y))
+                    
+                    // Горизонтальная линия (правая часть)
+                    path.move(to: CGPoint(x: center.x + innerRadius, y: center.y))
                     path.addLine(to: CGPoint(x: center.x + maxRadius, y: center.y))
                     
-                    // Вертикальная линия
+                    // Вертикальная линия (верхняя часть)
                     path.move(to: CGPoint(x: center.x, y: center.y - maxRadius))
+                    path.addLine(to: CGPoint(x: center.x, y: center.y - innerRadius))
+                    
+                    // Вертикальная линия (нижняя часть)
+                    path.move(to: CGPoint(x: center.x, y: center.y + innerRadius))
                     path.addLine(to: CGPoint(x: center.x, y: center.y + maxRadius))
                 }
                 .stroke(Color.coffe, lineWidth: 4)
                 
-                // Центральный элемент (луна)
                 Image(.moon)
                     .resizable()
                     .scaledToFit()

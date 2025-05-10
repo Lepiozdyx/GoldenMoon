@@ -197,34 +197,77 @@ class MillGameViewModel: ObservableObject {
     // MARK: - Helper methods
     
     func getCurrentPlayerName() -> String {
-        return game.currentPlayer == .player1 ? "Your Turn" : "Wait"
+        switch game.gameMode {
+        case .twoPlayers:
+            return game.currentPlayer == .player1 ? "Player 1's Turn" : "Player 2's Turn"
+        case .vsAI:
+            return game.currentPlayer == .player1 ? "Your Turn" : "AI's Turn"
+        case .tutorial:
+            return game.currentPlayer == .player1 ? "Your Turn" : "Tutorial"
+        }
     }
-    
+
     func getPhaseText() -> String {
         switch game.phase {
         case .placement:
-            return "Place your pieces"
+            let remainingPieces = game.currentPlayer == .player1 ?
+                (9 - game.player1PlacedPieces) : (9 - game.player2PlacedPieces)
+            return "Place pieces (\(remainingPieces) left)"
         case .movement:
-            return "Move your pieces"
+            return "Move pieces"
         case .jump:
-            return "Jump Mode"
+            return "Jump Mode (3 pieces)"
         }
     }
-    
+
     func getActionText() -> String {
         if game.mustRemovePiece {
-            return "Remove opponent's piece"
+            switch game.gameMode {
+            case .twoPlayers:
+                let opponentName = game.currentPlayer == .player1 ? "Player 2's" : "Player 1's"
+                return "Remove \(opponentName) piece"
+            case .vsAI:
+                if game.currentPlayer == .player1 {
+                    return "Remove AI's piece"
+                } else {
+                    return "AI is removing piece"
+                }
+            case .tutorial:
+                return "Remove opponent's piece"
+            }
         }
         
-        if game.phase == .placement {
-            return "Place your piece"
+        switch game.phase {
+        case .placement:
+            return "Tap to place piece"
+        case .movement, .jump:
+            if let _ = game.selectedNodeId {
+                return "Tap destination"
+            } else {
+                return "Select your piece"
+            }
         }
+    }
+
+    func getPlayerDisplayName(for player: MillPlayerType) -> String {
+        switch game.gameMode {
+        case .twoPlayers:
+            return player == .player1 ? "Player 1" : "Player 2"
+        case .vsAI:
+            return player == .player1 ? "You" : "AI"
+        case .tutorial:
+            return player == .player1 ? "You" : "Tutorial"
+        }
+    }
+
+    func getScoreText() -> String {
+        let player1Name = getPlayerDisplayName(for: .player1)
+        let player2Name = getPlayerDisplayName(for: .player2)
         
-        if let _ = game.selectedNodeId {
-            return "Select destination"
-        } else {
-            return "Select your piece"
-        }
+        let player1Pieces = game.player1Pieces
+        let player2Pieces = game.player2Pieces
+        
+        return "\(player1Name): \(player1Pieces) | \(player2Name): \(player2Pieces)"
     }
     
     func getTutorialText() -> String {
