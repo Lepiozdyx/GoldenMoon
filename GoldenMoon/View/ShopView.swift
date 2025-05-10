@@ -10,10 +10,11 @@ import SwiftUI
 struct ShopView: View {
     @EnvironmentObject private var appViewModel: AppViewModel
     @StateObject private var settings = SettingsViewModel.shared
+    @StateObject private var shopViewModel = ShopViewModel()
     
     var body: some View {
         ZStack {
-            BackgroundView(name: .bgimg1)
+            BackgroundView(name: appViewModel.currentBackground)
             
             VStack {
                 HStack(alignment: .top) {
@@ -40,164 +41,42 @@ struct ShopView: View {
                 Spacer()
                 
                 VStack(spacing: 30) {
+                    // Фоны
                     HStack(spacing: 10) {
-                        Image(.paper)
-                            .resizable()
-                            .frame(width: 80, height: 70)
-                            .overlay {
-                                Image(.bgimg1)
-                                    .resizable()
-                                    .padding(10)
-                            }
-                            .overlay(alignment: .bottom) {
-                                MainButtonView(label: "use", labelSize: 12, width: 60, height: 30) {
-                                    //
+                        ForEach(shopViewModel.availableBackgrounds, id: \.image) { background in
+                            BackgroundShopItem(
+                                background: background.image,
+                                price: background.price,
+                                isPurchased: shopViewModel.purchasedBackgrounds.contains(background.image),
+                                isSelected: shopViewModel.currentBackground == background.image,
+                                canAfford: appViewModel.coins >= background.price,
+                                onPurchase: {
+                                    shopViewModel.purchaseBackground(background.image)
+                                },
+                                onSelect: {
+                                    shopViewModel.selectBackground(background.image)
                                 }
-                                .offset(x: 0, y: 20)
-                            }
-                        
-                        Image(.paper)
-                            .resizable()
-                            .frame(width: 80, height: 70)
-                            .overlay {
-                                Image(.bgimg0)
-                                    .resizable()
-                                    .padding(10)
-                            }
-                            .overlay(alignment: .bottom) {
-                                MainButtonView(label: "100", labelSize: 12, width: 60, height: 30) {
-                                    //
-                                }
-                                .offset(x: 0, y: 20)
-                            }
-                        
-                        Image(.paper)
-                            .resizable()
-                            .frame(width: 80, height: 70)
-                            .overlay {
-                                Image(.bgimg2)
-                                    .resizable()
-                                    .padding(10)
-                            }
-                            .overlay(alignment: .bottom) {
-                                MainButtonView(label: "100", labelSize: 12, width: 60, height: 30) {
-                                    //
-                                }
-                                .offset(x: 0, y: 20)
-                            }
-                        
-                        Image(.paper)
-                            .resizable()
-                            .frame(width: 80, height: 70)
-                            .overlay {
-                                Image(.bgimg3)
-                                    .resizable()
-                                    .padding(10)
-                            }
-                            .overlay(alignment: .bottom) {
-                                MainButtonView(label: "100", labelSize: 12, width: 60, height: 30) {
-                                    //
-                                }
-                                .offset(x: 0, y: 20)
-                            }
+                            )
+                        }
                     }
                     
+                    // Фишки
                     HStack(spacing: 10) {
-                        Image(.paper)
-                            .resizable()
-                            .frame(width: 80, height: 70)
-                            .overlay {
-                                ZStack {
-                                    Image(.chip1)
-                                        .resizable()
-                                        .scaledToFit()
-                                        .offset(x: -5, y: -5)
-                                    
-                                    Image(.chip11)
-                                        .resizable()
-                                        .scaledToFit()
-                                        .offset(x: 15, y: 15)
+                        ForEach(Array(shopViewModel.availableChipSkins.enumerated()), id: \.offset) { index, skin in
+                            ChipShopItem(
+                                chipSkin: (skin.player1, skin.player2),
+                                price: skin.price,
+                                isPurchased: shopViewModel.purchasedChipSkins.contains { $0.player1 == skin.player1 && $0.player2 == skin.player2 },
+                                isSelected: shopViewModel.currentChipSkin.player1 == skin.player1 && shopViewModel.currentChipSkin.player2 == skin.player2,
+                                canAfford: appViewModel.coins >= skin.price,
+                                onPurchase: {
+                                    shopViewModel.purchaseChipSkin((skin.player1, skin.player2))
+                                },
+                                onSelect: {
+                                    shopViewModel.selectChipSkin((skin.player1, skin.player2))
                                 }
-                                .padding(15)
-                            }
-                            .overlay(alignment: .bottom) {
-                                MainButtonView(label: "use", labelSize: 12, width: 60, height: 30) {
-                                    //
-                                }
-                                .offset(x: 0, y: 20)
-                            }
-                        
-                        Image(.paper)
-                            .resizable()
-                            .frame(width: 80, height: 70)
-                            .overlay {
-                                ZStack {
-                                    Image(.chip2)
-                                        .resizable()
-                                        .scaledToFit()
-                                        .offset(x: -5, y: -5)
-                                    
-                                    Image(.chip22)
-                                        .resizable()
-                                        .scaledToFit()
-                                        .offset(x: 15, y: 15)
-                                }
-                                .padding(15)
-                            }
-                            .overlay(alignment: .bottom) {
-                                MainButtonView(label: "100", labelSize: 12, width: 60, height: 30) {
-                                    //
-                                }
-                                .offset(x: 0, y: 20)
-                            }
-                        
-                        Image(.paper)
-                            .resizable()
-                            .frame(width: 80, height: 70)
-                            .overlay {
-                                ZStack {
-                                    Image(.chip3)
-                                        .resizable()
-                                        .scaledToFit()
-                                        .offset(x: -5, y: -5)
-                                    
-                                    Image(.chip33)
-                                        .resizable()
-                                        .scaledToFit()
-                                        .offset(x: 15, y: 15)
-                                }
-                                .padding(15)
-                            }
-                            .overlay(alignment: .bottom) {
-                                MainButtonView(label: "100", labelSize: 12, width: 60, height: 30) {
-                                    //
-                                }
-                                .offset(x: 0, y: 20)
-                            }
-                        
-                        Image(.paper)
-                            .resizable()
-                            .frame(width: 80, height: 70)
-                            .overlay {
-                                ZStack {
-                                    Image(.chip4)
-                                        .resizable()
-                                        .scaledToFit()
-                                        .offset(x: -5, y: -5)
-                                    
-                                    Image(.chip44)
-                                        .resizable()
-                                        .scaledToFit()
-                                        .offset(x: 15, y: 15)
-                                }
-                                .padding(15)
-                            }
-                            .overlay(alignment: .bottom) {
-                                MainButtonView(label: "100", labelSize: 12, width: 60, height: 30) {
-                                    //
-                                }
-                                .offset(x: 0, y: 20)
-                            }
+                            )
+                        }
                     }
                 }
                 .padding(.horizontal, 80)
@@ -210,8 +89,124 @@ struct ShopView: View {
                 Spacer()
             }
             .padding()
-            
-            
+        }
+        .onAppear {
+            shopViewModel.appViewModel = appViewModel
+        }
+    }
+}
+
+struct BackgroundShopItem: View {
+    let background: ImageResource
+    let price: Int
+    let isPurchased: Bool
+    let isSelected: Bool
+    let canAfford: Bool
+    let onPurchase: () -> Void
+    let onSelect: () -> Void
+    
+    @StateObject private var settings = SettingsViewModel.shared
+    
+    var body: some View {
+        Image(.paper)
+            .resizable()
+            .frame(width: 80, height: 70)
+            .overlay {
+                Image(background)
+                    .resizable()
+                    .padding(10)
+            }
+            .overlay(alignment: .bottom) {
+                MainButtonView(
+                    label: buttonLabel,
+                    labelSize: 12,
+                    width: 60,
+                    height: 30
+                ) {
+                    settings.play()
+                    if isPurchased {
+                        if !isSelected {
+                            onSelect()
+                        }
+                    } else if canAfford {
+                        onPurchase()
+                    }
+                }
+                .disabled(!canAfford && !isPurchased)
+                .opacity(canAfford || isPurchased ? 1.0 : 0.6)
+                .offset(x: 0, y: 20)
+            }
+    }
+    
+    private var buttonLabel: String {
+        if isSelected {
+            return "used"
+        } else if isPurchased {
+            return "use"
+        } else {
+            return "\(price)"
+        }
+    }
+}
+
+struct ChipShopItem: View {
+    let chipSkin: (player1: ImageResource, player2: ImageResource)
+    let price: Int
+    let isPurchased: Bool
+    let isSelected: Bool
+    let canAfford: Bool
+    let onPurchase: () -> Void
+    let onSelect: () -> Void
+    
+    @StateObject private var settings = SettingsViewModel.shared
+    
+    var body: some View {
+        Image(.paper)
+            .resizable()
+            .frame(width: 80, height: 70)
+            .overlay {
+                ZStack {
+                    Image(chipSkin.player1)
+                        .resizable()
+                        .scaledToFit()
+                        .offset(x: -5, y: -5)
+                    
+                    Image(chipSkin.player2)
+                        .resizable()
+                        .scaledToFit()
+                        .offset(x: 15, y: 15)
+                }
+                .padding(15)
+            }
+            .overlay(alignment: .bottom) {
+                MainButtonView(
+                    label: buttonLabel,
+                    labelSize: 12,
+                    width: 60,
+                    height: 30
+                ) {
+                    settings.play()
+                    if isPurchased {
+                        if !isSelected {
+                            onSelect()
+                        }
+                    } else if canAfford {
+                        onPurchase()
+                    }
+                }
+                .disabled(!canAfford && !isPurchased)
+                .opacity(canAfford || isPurchased ? 1.0 : 0.6)
+                .offset(x: 0, y: 20)
+            }
+    }
+    
+    private var buttonLabel: String {
+        if isSelected {
+            return "used"
+        } else if isPurchased {
+            return "use"
+        } else {
+            return "\(price)"
         }
     }
 }

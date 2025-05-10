@@ -13,7 +13,7 @@ struct SettingsView: View {
     
     var body: some View {
         ZStack {
-            BackgroundView(name: .bgimg1)
+            BackgroundView(name: appViewModel.currentBackground)
             
             VStack {
                 Image(.labelGroup)

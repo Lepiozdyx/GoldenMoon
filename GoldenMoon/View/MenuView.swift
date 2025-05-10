@@ -10,7 +10,7 @@ struct MenuView: View {
     
     var body: some View {
         ZStack {
-            BackgroundView(name: .bgimg1)
+            BackgroundView(name: appViewModel.currentBackground)
             
             EmblemView()
             

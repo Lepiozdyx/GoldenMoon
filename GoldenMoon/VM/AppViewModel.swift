@@ -24,6 +24,9 @@ class AppViewModel: ObservableObject {
     @Published var remainingTime: String = ""
     @Published var isRewardAvailable: Bool = false
     
+    @Published var currentBackground: ImageResource = .bgimg1
+    @Published var currentChipSkin: (player1: ImageResource, player2: ImageResource) = (.chip1, .chip11)
+    
     private var rewardTimer: AnyCancellable?
     private let dailyRewardAmount: Int = 10
     

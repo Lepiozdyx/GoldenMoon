@@ -10,7 +10,7 @@ struct GameView: View {
     
     var body: some View {
         ZStack {
-            BackgroundView(name: .bgimg1)
+            BackgroundView(name: appViewModel.currentBackground)
             
             // Верхняя информационная панель
             VStack {

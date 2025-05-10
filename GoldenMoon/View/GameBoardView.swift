@@ -6,6 +6,7 @@ import SwiftUI
 
 struct GameBoardView: View {
     @ObservedObject var viewModel: MillGameViewModel
+    @EnvironmentObject var appViewModel: AppViewModel
     let onNodeTap: (Int) -> Void
     
     var body: some View {
@@ -95,7 +96,12 @@ struct GameBoardView: View {
                                     }
                                 }
                             }
-                            .stroke(viewModel.game.currentPlayer == .player1 ? Color.red.opacity(0.7) : Color.blue.opacity(0.7), lineWidth: 4)
+                            .stroke(
+                                viewModel.game.currentPlayer == .player1
+                                    ? Color.red.opacity(0.7)
+                                    : Color.blue.opacity(0.7),
+                                lineWidth: 4
+                            )
                         }
                     }
                 }
@@ -113,6 +119,7 @@ struct GameBoardView: View {
                     NodeView(node: node, nodeSize: nodeSize, onTap: {
                         onNodeTap(node.id)
                     })
+                    .environmentObject(appViewModel)
                     .position(nodePosition)
                     .animation(.easeInOut, value: node.piece)
                     .animation(.easeInOut, value: node.isHighlighted)
@@ -148,4 +155,5 @@ struct GameBoardView: View {
 
 #Preview {
     GameBoardView(viewModel: MillGameViewModel(), onNodeTap: {_ in })
+        .environmentObject(AppViewModel())
 }

@@ -9,6 +9,7 @@ struct SidePiecesView: View {
     let piecesCount: Int
     let pieceSize: CGFloat
     let gameMode: MillGameMode
+    @EnvironmentObject var appViewModel: AppViewModel
     
     private let columns = [
         GridItem(.flexible()),
@@ -41,11 +42,11 @@ struct SidePiecesView: View {
                     LazyVGrid(columns: columns, spacing: 8) {
                         ForEach(0..<piecesCount, id: \.self) { _ in
                             PieceView(player: player, size: pieceSize, isSelected: false)
+                                .environmentObject(appViewModel)
                         }
                     }
                     .frame(width: 60)
                 }
-
         }
     }
     
@@ -65,5 +66,6 @@ struct SidePiecesView: View {
     ZStack {
         Color.gray.ignoresSafeArea()
         SidePiecesView(player: .player1, piecesCount: 9, pieceSize: 15, gameMode: .twoPlayers)
+            .environmentObject(AppViewModel())
     }
 }

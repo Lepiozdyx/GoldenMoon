@@ -8,6 +8,7 @@ struct NodeView: View {
     let node: MillNode
     let nodeSize: CGFloat
     let onTap: () -> Void
+    @EnvironmentObject var appViewModel: AppViewModel
     
     var body: some View {
         ZStack {
@@ -20,13 +21,16 @@ struct NodeView: View {
             Circle()
                 .foregroundStyle(.coffe)
                 .frame(width: nodeSize, height: nodeSize)
-                .overlay(
-                    node.piece != nil ?
-                    Circle()
-                        .fill(node.piece!.color)
-                        .frame(width: nodeSize * 0.8, height: nodeSize * 0.8)
-                    : nil
+            
+            // Фишка на узле (если есть)
+            if let piece = node.piece {
+                PieceView(
+                    player: piece.player,
+                    size: nodeSize * 0.8,
+                    isSelected: false
                 )
+                .environmentObject(appViewModel)
+            }
         }
         .contentShape(Circle())
         .onTapGesture {
@@ -36,5 +40,10 @@ struct NodeView: View {
 }
 
 #Preview {
-    NodeView(node: .init(id: 1, position: CGPoint(x: 100, y: 100), connections: []), nodeSize: 100, onTap: {})
+    NodeView(
+        node: MillNode(id: 1, position: CGPoint(x: 100, y: 100), connections: []),
+        nodeSize: 100,
+        onTap: {}
+    )
+    .environmentObject(AppViewModel())
 }

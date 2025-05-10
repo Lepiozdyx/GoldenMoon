@@ -9,29 +9,32 @@ struct PieceView: View {
     let size: CGFloat
     let isSelected: Bool
     
+    @EnvironmentObject var appViewModel: AppViewModel
+    
     var body: some View {
-        Circle()
-            .fill(pieceColor)
+        Image(pieceImage)
+            .resizable()
             .frame(width: size, height: size)
             .overlay(
                 Circle()
-                    .stroke(isSelected ? Color.yellow : Color.white, lineWidth: isSelected ? 3 : 1)
+                    .stroke(isSelected ? Color.yellow : Color.clear, lineWidth: isSelected ? 5 : 0)
             )
-            .shadow(color: pieceColor.opacity(0.6), radius: isSelected ? 5 : 2)
+            .shadow(color: .black.opacity(0.3), radius: isSelected ? 5 : 2)
     }
     
-    private var pieceColor: Color {
+    private var pieceImage: ImageResource {
         switch player {
         case .player1:
-            return .red
+            return appViewModel.currentChipSkin.player1
         case .player2:
-            return .blue
+            return appViewModel.currentChipSkin.player2
         case .none:
-            return .clear
+            return .chip1
         }
     }
 }
 
 #Preview {
     PieceView(player: .player1, size: 100, isSelected: true)
+        .environmentObject(AppViewModel())
 }
