@@ -12,6 +12,7 @@ class MillGameViewModel: ObservableObject {
     @Published var isPaused: Bool = false
     @Published var tutorialStep: Int = 0
     @Published var tutorialCompleted: Bool = false
+    @Published var showTutorial: Bool = false
     
     weak var appViewModel: AppViewModel?
     private var cancellables = Set<AnyCancellable>()

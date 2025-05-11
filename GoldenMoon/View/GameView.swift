@@ -98,6 +98,25 @@ struct GameView: View {
             if viewModel.showDefeatOverlay {
                 DefeatOverlayView()
             }
+            
+            // Туториал оверлей
+            if viewModel.showTutorial {
+                TutorialView(
+                    showTutorial: $viewModel.showTutorial,
+                    gameMode: viewModel.game.gameMode
+                )
+                .transition(.opacity)
+                .zIndex(101)
+            }
+        }
+        .onReceive(viewModel.$showTutorial) { isShowing in
+            // Проверяем, что туториал только что был закрыт
+            if !isShowing && !UserDefaults.standard.bool(forKey: "goldenMoon.tutorialCompleted") {
+                // Туториал завершен, начисляем награду
+                appViewModel.completeTutorial()
+                appViewModel.coins += 100
+                appViewModel.saveGameState()
+            }
         }
     }
 }

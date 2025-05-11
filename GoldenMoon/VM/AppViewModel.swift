@@ -53,6 +53,7 @@ class AppViewModel: ObservableObject {
     private let totalGamesPlayedKey = "goldenMoon.totalGamesPlayed"
     private let currentBackgroundKey = "goldenMoon.currentBackground"
     private let currentChipSkinKey = "goldenMoon.currentChipSkin"
+    private let tutorialCompletedKey = "goldenMoon.tutorialCompleted"
     
     init() {
         // Загрузка сохраненных данных
@@ -224,7 +225,27 @@ class AppViewModel: ObservableObject {
     func startGame(mode: MillGameMode = .twoPlayers) {
         millGameViewModel = MillGameViewModel(gameMode: mode)
         millGameViewModel?.appViewModel = self
+        
+        // Проверяем, завершен ли туториал
+        let tutorialCompleted = UserDefaults.standard.bool(forKey: tutorialCompletedKey)
+        
+        // Показываем туториал только если он еще не был завершен
+        if !tutorialCompleted {
+            millGameViewModel?.showTutorial = true
+        } else {
+            millGameViewModel?.showTutorial = false
+        }
+        
         navigateTo(.game)
+    }
+    
+    func completeTutorial() {
+        // Сохраняем состояние туториала как завершенное
+        UserDefaults.standard.set(true, forKey: tutorialCompletedKey)
+        UserDefaults.standard.synchronize()
+        
+        // Обновляем флаг в viewModel
+        millGameViewModel?.showTutorial = false
     }
     
     func goToMenu() {
@@ -364,6 +385,7 @@ class AppViewModel: ObservableObject {
         UserDefaults.standard.removeObject(forKey: lastDailyRewardKey)
         UserDefaults.standard.removeObject(forKey: currentBackgroundKey)
         UserDefaults.standard.removeObject(forKey: currentChipSkinKey)
+        UserDefaults.standard.removeObject(forKey: tutorialCompletedKey)
         UserDefaults.standard.synchronize()
     }
 }
