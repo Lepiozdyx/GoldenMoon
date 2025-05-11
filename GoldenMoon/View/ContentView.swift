@@ -5,6 +5,9 @@
 import SwiftUI
 
 struct ContentView: View {
+    @Environment(\.scenePhase) private var scenePhase
+    
+    @StateObject private var settings = SettingsViewModel.shared
     @StateObject private var appViewModel = AppViewModel()
     @StateObject private var achievementViewModel = AchievementViewModel()
     
@@ -41,6 +44,21 @@ struct ContentView: View {
         .onAppear {
             appViewModel.achievementViewModel = achievementViewModel
             achievementViewModel.appViewModel = appViewModel
+        }
+        .onAppear {
+            if settings.isMusicOn {
+                settings.playMusic()
+            }
+        }
+        .onChange(of: scenePhase) { state in
+            switch state {
+            case .active:
+                settings.playMusic()
+            case .background, .inactive:
+                settings.stopMusic()
+            @unknown default:
+                break
+            }
         }
     }
 }
