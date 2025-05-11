@@ -34,7 +34,7 @@ struct GameView: View {
                 
                 HStack {
                     // Левая панель фишек (игрок 1)
-                    if viewModel.game.phase == .placement {
+                    if !viewModel.game.isAllPiecesPlaced() {
                         SidePiecesView(
                             player: .player1,
                             piecesCount: 9 - viewModel.game.player1PlacedPieces,
@@ -46,7 +46,7 @@ struct GameView: View {
                     Spacer()
                     
                     // Правая панель фишек (игрок 2)
-                    if viewModel.game.phase == .placement {
+                    if !viewModel.game.isAllPiecesPlaced() {
                         SidePiecesView(
                             player: .player2,
                             piecesCount: 9 - viewModel.game.player2PlacedPieces,

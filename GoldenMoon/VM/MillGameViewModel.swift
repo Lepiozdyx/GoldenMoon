@@ -38,12 +38,30 @@ class MillGameViewModel: ObservableObject {
                 guard let self = self,
                       self.game.gameMode == .vsAI,
                       player == .player2,
-                      !self.game.gameOver,
-                      !self.game.mustRemovePiece || self.game.currentPlayer == .player2 else {
+                      !self.game.gameOver else {
                     return
                 }
                 
                 // Добавляем небольшую задержку, чтобы игрок успел увидеть свой ход
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    self.game.makeAIMove()
+                }
+            }
+            .store(in: &cancellables)
+            
+        // Следим за изменением флага mustRemovePiece для AI
+        game.$mustRemovePiece
+            .receive(on: RunLoop.main)
+            .sink { [weak self] mustRemove in
+                guard let self = self,
+                      self.game.gameMode == .vsAI,
+                      self.game.currentPlayer == .player2,
+                      mustRemove,
+                      !self.game.gameOver else {
+                    return
+                }
+                
+                // AI должен удалить фишку
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     self.game.makeAIMove()
                 }
@@ -78,14 +96,17 @@ class MillGameViewModel: ObservableObject {
             // Обрабатываем действие в зависимости от текущей фазы игры
             if self.game.mustRemovePiece {
                 self.game.removePiece(at: nodeId)
-            } else if self.game.phase == .placement {
-                self.game.placePiece(at: nodeId)
             } else {
-                // Фазы movement или jump
-                if let selectedNodeId = self.game.selectedNodeId {
-                    self.game.movePiece(from: selectedNodeId, to: nodeId)
+                let currentPhase = self.game.getPhaseForPlayer(self.game.currentPlayer)
+                if currentPhase == .placement {
+                    self.game.placePiece(at: nodeId)
                 } else {
-                    self.game.selectPiece(at: nodeId)
+                    // Фазы movement или jump
+                    if let selectedNodeId = self.game.selectedNodeId {
+                        self.game.movePiece(from: selectedNodeId, to: nodeId)
+                    } else {
+                        self.game.selectPiece(at: nodeId)
+                    }
                 }
             }
         }
@@ -157,7 +178,8 @@ class MillGameViewModel: ObservableObject {
             // Логика для пошагового обучения
             switch self.tutorialStep {
             case 0: // Объяснение правил размещения фишек
-                if self.game.phase == .placement && !self.game.mustRemovePiece {
+                let currentPhase = self.game.getPhaseForPlayer(self.game.currentPlayer)
+                if currentPhase == .placement && !self.game.mustRemovePiece {
                     self.game.placePiece(at: nodeId)
                     if self.game.millFormed {
                         self.tutorialStep = 1 // Переход к объяснению удаления фишек при формировании мельницы
@@ -169,7 +191,8 @@ class MillGameViewModel: ObservableObject {
                     self.tutorialStep = 2 // Переход к объяснению перемещения фишек
                 }
             case 2: // Объяснение перемещения фишек
-                if self.game.phase == .movement && !self.game.mustRemovePiece {
+                let currentPhase = self.game.getPhaseForPlayer(self.game.currentPlayer)
+                if currentPhase == .movement && !self.game.mustRemovePiece {
                     if self.game.selectedNodeId == nil {
                         self.game.selectPiece(at: nodeId)
                     } else {
@@ -178,7 +201,8 @@ class MillGameViewModel: ObservableObject {
                     }
                 }
             case 3: // Объяснение прыжков (при 3 фишках)
-                if self.game.phase == .jump && !self.game.mustRemovePiece {
+                let currentPhase = self.game.getPhaseForPlayer(self.game.currentPlayer)
+                if currentPhase == .jump && !self.game.mustRemovePiece {
                     if self.game.selectedNodeId == nil {
                         self.game.selectPiece(at: nodeId)
                     } else {
@@ -208,7 +232,8 @@ class MillGameViewModel: ObservableObject {
     }
 
     func getPhaseText() -> String {
-        switch game.phase {
+        let currentPhase = game.getPhaseForPlayer(game.currentPlayer)
+        switch currentPhase {
         case .placement:
             let remainingPieces = game.currentPlayer == .player1 ?
                 (9 - game.player1PlacedPieces) : (9 - game.player2PlacedPieces)
@@ -237,7 +262,8 @@ class MillGameViewModel: ObservableObject {
             }
         }
         
-        switch game.phase {
+        let currentPhase = game.getPhaseForPlayer(game.currentPlayer)
+        switch currentPhase {
         case .placement:
             return "Tap to place piece"
         case .movement, .jump:
