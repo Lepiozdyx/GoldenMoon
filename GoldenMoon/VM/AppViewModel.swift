@@ -51,6 +51,8 @@ class AppViewModel: ObservableObject {
     private let maxCompletedLevelKey = "goldenMoon.maxCompletedLevel"
     private let lastDailyRewardKey = "goldenMoon.lastDailyReward"
     private let totalGamesPlayedKey = "goldenMoon.totalGamesPlayed"
+    private let currentBackgroundKey = "goldenMoon.currentBackground"
+    private let currentChipSkinKey = "goldenMoon.currentChipSkin"
     
     init() {
         // Загрузка сохраненных данных
@@ -60,6 +62,21 @@ class AppViewModel: ObservableObject {
         self.millsFormed = UserDefaults.standard.integer(forKey: millsFormedKey)
         self.maxCompletedLevel = UserDefaults.standard.integer(forKey: maxCompletedLevelKey)
         self.totalGamesPlayed = UserDefaults.standard.integer(forKey: totalGamesPlayedKey)
+        
+        // Загрузка сохраненного фона
+        if let backgroundString = UserDefaults.standard.string(forKey: currentBackgroundKey),
+           let background = imageResourceFromString(backgroundString) {
+            self.currentBackground = background
+        }
+        
+        // Загрузка сохраненных скинов фишек
+        if let data = UserDefaults.standard.data(forKey: currentChipSkinKey),
+           let skinPair = try? JSONDecoder().decode([String].self, from: data),
+           skinPair.count == 2,
+           let chip1 = imageResourceFromString(skinPair[0]),
+           let chip2 = imageResourceFromString(skinPair[1]) {
+            self.currentChipSkin = (chip1, chip2)
+        }
         
         // Загрузка даты последнего получения награды
         if let dateData = UserDefaults.standard.data(forKey: lastDailyRewardKey),
@@ -79,6 +96,46 @@ class AppViewModel: ObservableObject {
     
     deinit {
         rewardTimer?.cancel()
+    }
+    
+    // MARK: - Helper methods
+    
+    // Вспомогательная функция для конвертации String в ImageResource
+    private func imageResourceFromString(_ string: String) -> ImageResource? {
+        switch string {
+        case "bgimg0": return .bgimg0
+        case "bgimg1": return .bgimg1
+        case "bgimg2": return .bgimg2
+        case "bgimg3": return .bgimg3
+        case "chip1": return .chip1
+        case "chip11": return .chip11
+        case "chip2": return .chip2
+        case "chip22": return .chip22
+        case "chip3": return .chip3
+        case "chip33": return .chip33
+        case "chip4": return .chip4
+        case "chip44": return .chip44
+        default: return nil
+        }
+    }
+    
+    // Вспомогательная функция для конвертации ImageResource в String
+    private func stringFromImageResource(_ resource: ImageResource) -> String {
+        switch resource {
+        case .bgimg0: return "bgimg0"
+        case .bgimg1: return "bgimg1"
+        case .bgimg2: return "bgimg2"
+        case .bgimg3: return "bgimg3"
+        case .chip1: return "chip1"
+        case .chip11: return "chip11"
+        case .chip2: return "chip2"
+        case .chip22: return "chip22"
+        case .chip3: return "chip3"
+        case .chip33: return "chip33"
+        case .chip4: return "chip4"
+        case .chip44: return "chip44"
+        default: return "unknown"
+        }
     }
     
     // MARK: - Achievement Check
@@ -252,6 +309,17 @@ class AppViewModel: ObservableObject {
         }
     }
     
+    // Метод для обновления фона и скинов от ShopViewModel
+    func updateAppearance(background: ImageResource? = nil, chipSkin: (player1: ImageResource, player2: ImageResource)? = nil) {
+        if let bg = background {
+            self.currentBackground = bg
+        }
+        if let skin = chipSkin {
+            self.currentChipSkin = skin
+        }
+        saveGameState()
+    }
+    
     func saveGameState() {
         UserDefaults.standard.set(coins, forKey: coinsKey)
         UserDefaults.standard.set(currentLevel, forKey: currentLevelKey)
@@ -259,6 +327,15 @@ class AppViewModel: ObservableObject {
         UserDefaults.standard.set(millsFormed, forKey: millsFormedKey)
         UserDefaults.standard.set(maxCompletedLevel, forKey: maxCompletedLevelKey)
         UserDefaults.standard.set(totalGamesPlayed, forKey: totalGamesPlayedKey)
+        
+        // Сохранение текущего фона
+        UserDefaults.standard.set(stringFromImageResource(currentBackground), forKey: currentBackgroundKey)
+        
+        // Сохранение текущих скинов фишек
+        let currentSkinStrings = [stringFromImageResource(currentChipSkin.0), stringFromImageResource(currentChipSkin.1)]
+        if let data = try? JSONEncoder().encode(currentSkinStrings) {
+            UserDefaults.standard.set(data, forKey: currentChipSkinKey)
+        }
         
         // Сохраняем дату последнего получения награды
         if let date = lastDailyRewardClaimDate,
@@ -285,6 +362,8 @@ class AppViewModel: ObservableObject {
         UserDefaults.standard.removeObject(forKey: maxCompletedLevelKey)
         UserDefaults.standard.removeObject(forKey: totalGamesPlayedKey)
         UserDefaults.standard.removeObject(forKey: lastDailyRewardKey)
+        UserDefaults.standard.removeObject(forKey: currentBackgroundKey)
+        UserDefaults.standard.removeObject(forKey: currentChipSkinKey)
         UserDefaults.standard.synchronize()
     }
 }

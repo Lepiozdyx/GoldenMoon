@@ -101,10 +101,9 @@ class ShopViewModel: ObservableObject {
         
         UserDefaults.standard.synchronize()
         
-        // Обновляем AppViewModel
+        // Обновляем AppViewModel через специальный метод
         if let appViewModel = appViewModel {
-            appViewModel.currentBackground = currentBackground
-            appViewModel.currentChipSkin = currentChipSkin
+            appViewModel.updateAppearance(background: currentBackground, chipSkin: currentChipSkin)
         }
     }
     
