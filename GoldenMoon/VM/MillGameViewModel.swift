@@ -102,9 +102,24 @@ class MillGameViewModel: ObservableObject {
                     self.game.placePiece(at: nodeId)
                 } else {
                     // Фазы movement или jump
+                    guard let node = self.game.board.getNode(id: nodeId) else { return }
+                    
+                    // Если есть выбранная фишка
                     if let selectedNodeId = self.game.selectedNodeId {
-                        self.game.movePiece(from: selectedNodeId, to: nodeId)
+                        // Если нажали на ту же фишку - отменяем выбор
+                        if selectedNodeId == nodeId {
+                            self.game.selectPiece(at: nodeId)
+                        }
+                        // Если нажали на другую фишку текущего игрока - выбираем новую
+                        else if let piece = node.piece, piece.player == self.game.currentPlayer {
+                            self.game.selectPiece(at: nodeId)
+                        }
+                        // Если нажали на пустой узел - пытаемся переместить
+                        else if node.piece == nil {
+                            self.game.movePiece(from: selectedNodeId, to: nodeId)
+                        }
                     } else {
+                        // Если нет выбранной фишки - пытаемся выбрать
                         self.game.selectPiece(at: nodeId)
                     }
                 }

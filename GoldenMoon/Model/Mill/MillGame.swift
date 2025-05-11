@@ -127,7 +127,14 @@ class MillGame: ObservableObject {
                   let piece = node.piece,
                   piece.player == self.currentPlayer else { return }
             
+            // Сбрасываем предыдущие подсветки
             self.board.resetHighlights()
+            
+            // Если эта фишка уже выбрана, отменяем выбор
+            if self.selectedNodeId == nodeId {
+                self.selectedNodeId = nil
+                return
+            }
             
             // Определяем доступные ходы
             var availableMoves: [Int] = []
