@@ -24,20 +24,14 @@ class MillBoard: ObservableObject {
             var connections: [Int] = []
             
             // Соединение с соседями в кольце
-            if i == 0 {
-                connections.append(7)
-                connections.append(1)
-            } else if i == 7 {
-                connections.append(6)
-                connections.append(0)
-            } else {
-                connections.append(i-1)
-                connections.append(i+1)
-            }
+            let prevIndex = (i - 1 + 8) % 8
+            let nextIndex = (i + 1) % 8
+            connections.append(prevIndex)
+            connections.append(nextIndex)
             
             // Если это узел на радиальной линии (0, 2, 4, 6), соединяем с средним кольцом
             if i % 2 == 0 {
-                connections.append(8 + i/2)
+                connections.append(8 + i)  // Исправлено: было 8 + i/2
             }
             
             initialNodes.append(MillNode(id: i, position: CGPoint(x: x, y: y), connections: connections))
@@ -54,25 +48,15 @@ class MillBoard: ObservableObject {
             var connections: [Int] = []
             
             // Соединение с соседями в кольце
-            if i == 0 {
-                connections.append(15)
-                connections.append(9)
-            } else if i == 7 {
-                connections.append(14)
-                connections.append(8)
-            } else {
-                connections.append(7 + i)
-                connections.append(9 + i)
-            }
+            let prevIndex = ((i - 1 + 8) % 8) + 8
+            let nextIndex = ((i + 1) % 8) + 8
+            connections.append(prevIndex)
+            connections.append(nextIndex)
             
             // Если это узел на радиальной линии (0, 2, 4, 6), соединяем с внешним кольцом
             if i % 2 == 0 {
-                connections.append(i)
-            }
-            
-            // Если это узел на радиальной линии (0, 2, 4, 6), соединяем с внутренним кольцом
-            if i % 2 == 0 {
-                connections.append(16 + i/2)
+                connections.append(i)  // Соединение с внешним кольцом
+                connections.append(16 + i)  // Соединение с внутренним кольцом
             }
             
             initialNodes.append(MillNode(id: 8 + i, position: CGPoint(x: x, y: y), connections: connections))
@@ -89,20 +73,14 @@ class MillBoard: ObservableObject {
             var connections: [Int] = []
             
             // Соединение с соседями в кольце
-            if i == 0 {
-                connections.append(23)
-                connections.append(17)
-            } else if i == 7 {
-                connections.append(22)
-                connections.append(16)
-            } else {
-                connections.append(15 + i)
-                connections.append(17 + i)
-            }
+            let prevIndex = ((i - 1 + 8) % 8) + 16
+            let nextIndex = ((i + 1) % 8) + 16
+            connections.append(prevIndex)
+            connections.append(nextIndex)
             
             // Если это узел на радиальной линии (0, 2, 4, 6), соединяем с средним кольцом
             if i % 2 == 0 {
-                connections.append(8 + i)
+                connections.append(8 + i)  // Соединение с средним кольцом
             }
             
             initialNodes.append(MillNode(id: 16 + i, position: CGPoint(x: x, y: y), connections: connections))
@@ -213,6 +191,24 @@ class MillBoard: ObservableObject {
     func resetHighlights() {
         for i in 0..<nodes.count {
             nodes[i].isHighlighted = false
+        }
+    }
+    
+    // Метод для валидации связей (для отладки)
+    func validateConnections() {
+        for node in nodes {
+            print("Node \(node.id) connects to: \(node.connections)")
+            
+            // Проверяем, что все связи двунаправленные
+            for connectionId in node.connections {
+                if let connectedNode = getNode(id: connectionId) {
+                    if !connectedNode.connections.contains(node.id) {
+                        print("WARNING: One-way connection found! Node \(node.id) -> \(connectionId)")
+                    }
+                } else {
+                    print("ERROR: Invalid connection! Node \(node.id) -> \(connectionId)")
+                }
+            }
         }
     }
 }

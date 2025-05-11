@@ -119,8 +119,8 @@ struct BackgroundShopItem: View {
             .overlay(alignment: .bottom) {
                 MainButtonView(
                     label: buttonLabel,
-                    labelSize: 12,
-                    width: 60,
+                    labelSize: 10,
+                    width: 70,
                     height: 30
                 ) {
                     settings.play()
@@ -181,8 +181,8 @@ struct ChipShopItem: View {
             .overlay(alignment: .bottom) {
                 MainButtonView(
                     label: buttonLabel,
-                    labelSize: 12,
-                    width: 60,
+                    labelSize: 10,
+                    width: 70,
                     height: 30
                 ) {
                     settings.play()
