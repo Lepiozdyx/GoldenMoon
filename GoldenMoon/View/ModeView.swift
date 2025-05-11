@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ModeView: View {
     @EnvironmentObject var appViewModel: AppViewModel
+    @StateObject private var settings = SettingsViewModel.shared
     
     var body: some View {
         ZStack {
@@ -30,7 +31,7 @@ struct ModeView: View {
             VStack {
                 HStack {
                     SquareButtonView(image: .arrow) {
-                        //                        svm.play()
+                        settings.play()
                         appViewModel.navigateTo(.menu)
                     }
                     
@@ -42,12 +43,12 @@ struct ModeView: View {
             
             HStack(spacing: 60) {
                 MainButtonView(label: "Solo", labelSize: 20) {
-                    //                    svm.play()
+                    settings.play()
                     appViewModel.startGame(mode: .vsAI)
                 }
                 
                 MainButtonView(label: "Two Players", labelSize: 20) {
-                    //                    svm.play()
+                    settings.play()
                     appViewModel.startGame(mode: .twoPlayers)
                 }
             }

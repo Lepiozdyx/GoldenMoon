@@ -7,6 +7,7 @@ import Combine
 
 enum AppScreen {
     case menu
+    case mode
     case game
     case settings
     case shop

@@ -21,7 +21,7 @@ struct MenuView: View {
                 
                 MainButtonView(label: "Play", labelSize: 20) {
                     settings.play()
-//                    appViewModel.navigateTo(.mode)
+                    appViewModel.navigateTo(.mode)
                 }
                 
                 MainButtonView(label: "Achieve", labelSize: 20) {

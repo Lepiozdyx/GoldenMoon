@@ -18,6 +18,10 @@ struct ContentView: View {
                 MenuView()
                     .environmentObject(appViewModel)
                 
+            case .mode:
+                ModeView()
+                    .environmentObject(appViewModel)
+                
             case .game:
                 if let gameViewModel = appViewModel.millGameViewModel {
                     GameView(viewModel: gameViewModel)
