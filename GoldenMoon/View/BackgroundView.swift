@@ -1,9 +1,6 @@
 //
 //  BackgroundView.swift
 //  GoldenMoon
-//
-//  Created by Alex on 08.05.2025.
-//
 
 import SwiftUI
 

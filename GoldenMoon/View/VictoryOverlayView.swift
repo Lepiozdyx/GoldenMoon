@@ -21,7 +21,7 @@ struct VictoryOverlayView: View {
                     .frame(height: 85)
                 
                 if showCoins {
-                    ScoreboardView(amount: 100)
+                    ScoreboardView(amount: 10)
                         .animation(.spring(response: 0.5, dampingFraction: 0.6, blendDuration: 1.0), value: showCoins)
                 }
                 

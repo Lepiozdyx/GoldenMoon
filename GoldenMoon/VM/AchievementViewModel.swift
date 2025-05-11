@@ -1,9 +1,6 @@
 //
 //  AchievementViewModel.swift
 //  GoldenMoon
-//
-//  Created by Alex on 10.05.2025.
-//
 
 import SwiftUI
 

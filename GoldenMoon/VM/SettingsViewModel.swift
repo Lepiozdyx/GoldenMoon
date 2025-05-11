@@ -1,7 +1,6 @@
 //
 //  SettingsViewModel.swift
 //  GoldenMoon
-//
 
 import SwiftUI
 import AVFoundation

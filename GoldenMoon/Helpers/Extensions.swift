@@ -2,7 +2,6 @@
 //  Extensions.swift
 //  GoldenMoon
 
-
 import SwiftUI
 
 extension Text {

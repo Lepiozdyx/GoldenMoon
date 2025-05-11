@@ -3,7 +3,6 @@
 //  GoldenMoon
 //
 
-
 import SwiftUI
 
 @main

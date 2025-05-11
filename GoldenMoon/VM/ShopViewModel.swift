@@ -1,7 +1,6 @@
 //
 //  ShopViewModel.swift
 //  GoldenMoon
-//
 
 import SwiftUI
 import Combine

@@ -1,9 +1,6 @@
 //
 //  SettingsView.swift
 //  GoldenMoon
-//
-//  Created by Alex on 10.05.2025.
-//
 
 import SwiftUI
 
@@ -16,19 +13,6 @@ struct SettingsView: View {
             BackgroundView(name: appViewModel.currentBackground)
             
             VStack {
-                Image(.labelGroup)
-                    .resizable()
-                    .frame(width: 180, height: 75)
-                    .overlay {
-                        Text("Settings")
-                            .customFont(28)
-                    }
-                
-                Spacer()
-            }
-            .padding()
-            
-            VStack {
                 HStack {
                     SquareButtonView(image: .arrow) {
                         settings.play()
@@ -36,36 +20,49 @@ struct SettingsView: View {
                     }
                     
                     Spacer()
+                    
+                    Image(.labelGroup)
+                        .resizable()
+                        .frame(width: 180, height: 75)
+                        .overlay {
+                            Text("Settings")
+                                .customFont(28)
+                        }
+                    
+                    Spacer()
                 }
+                
+                Spacer()
+                
+                VStack(spacing: 20) {
+                    SettingsItemView(
+                        title: "Sound",
+                        isOn: settings.isSoundOn,
+                        action: {
+                            settings.toggleSound()
+                        }
+                    )
+                    
+                    SettingsItemView(
+                        title: "Music",
+                        isOn: settings.isMusicOn,
+                        isDisabled: !settings.isSoundOn,
+                        action: {
+                            settings.toggleMusic()
+                        }
+                    )
+                }
+                .frame(width: 200)
+                .padding(.horizontal, 80)
+                .padding(.vertical, 50)
+                .background(
+                    Image(.frame)
+                        .resizable()
+                )
+                
                 Spacer()
             }
             .padding()
-            
-            VStack(spacing: 20) {
-                SettingsItemView(
-                    title: "Sound",
-                    isOn: settings.isSoundOn,
-                    action: {
-                        settings.toggleSound()
-                    }
-                )
-                
-                SettingsItemView(
-                    title: "Music",
-                    isOn: settings.isMusicOn,
-                    isDisabled: !settings.isSoundOn,
-                    action: {
-                        settings.toggleMusic()
-                    }
-                )
-            }
-            .frame(width: 200)
-            .padding(.horizontal, 80)
-            .padding(.vertical, 50)
-            .background(
-                Image(.frame)
-                    .resizable()
-            )
         }
     }
 }
