@@ -128,20 +128,6 @@ struct SequenceGameView: View {
                     Text("Success!")
                         .customFont(min(geometry.size.width * 0.05, 40))
                     
-                    Text("Congratulations!")
-                        .customFont(min(geometry.size.width * 0.02, 16))
-                    
-                    if viewModel.currentSequenceLength == SequenceGameConstants.initialSequenceLength {
-                        HStack {
-                            Text("+\(MiniGameType.sequence.reward)")
-                                .customFont(min(geometry.size.width * 0.03, 24))
-                            
-                            Image(.coin)
-                                .resizable()
-                                .frame(width: min(geometry.size.width * 0.05, 40), height: min(geometry.size.width * 0.05, 40))
-                        }
-                    }
-                    
                     MainButtonView(
                         label: "Continue",
                         labelSize: min(geometry.size.width * 0.022, 18),

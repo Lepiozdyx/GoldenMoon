@@ -112,17 +112,6 @@ struct MemoryGameView: View {
                         .customFont(min(geometry.size.width * 0.04, 36))
                 }
                 
-                if success {
-                    HStack {
-                        Text("+\(MiniGameType.memoryCards.reward)")
-                            .customFont(min(geometry.size.width * 0.03, 24))
-                        
-                        Image(.coin)
-                            .resizable()
-                            .frame(width: min(geometry.size.width * 0.05, 40), height: min(geometry.size.width * 0.05, 40))
-                    }
-                }
-                
                 MainButtonView(
                     label: "Back to menu",
                     labelSize: min(geometry.size.width * 0.022, 18),

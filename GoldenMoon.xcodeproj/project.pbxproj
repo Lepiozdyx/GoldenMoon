@@ -10,9 +10,22 @@
 		FA8855872DC9415000DF8B43 /* GoldenMoon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GoldenMoon.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		FA2A40B92DD26C6400F45AC8 /* Exceptions for "GoldenMoon" folder in "GoldenMoon" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = FA8855862DC9415000DF8B43 /* GoldenMoon */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		FA8855892DC9415000DF8B43 /* GoldenMoon */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				FA2A40B92DD26C6400F45AC8 /* Exceptions for "GoldenMoon" folder in "GoldenMoon" target */,
+			);
 			path = GoldenMoon;
 			sourceTree = "<group>";
 		};
@@ -253,6 +266,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = GoldenMoon/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Golden Moon Games";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -265,7 +279,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.game.GoldenMoon;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gldenmoon.game;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -286,6 +300,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = GoldenMoon/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Golden Moon Games";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -298,7 +313,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.game.GoldenMoon;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gldenmoon.game;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
