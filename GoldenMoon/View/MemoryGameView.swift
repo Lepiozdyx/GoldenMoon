@@ -28,10 +28,10 @@ struct MemoryGameView: View {
                             
                             Image(.labelGroup)
                                 .resizable()
-                                .frame(width: 255, height: 75)
+                                .frame(width: min(geometry.size.width * 0.3, 255), height: min(geometry.size.width * 0.09, 75))
                                 .overlay {
                                     Text("Memory cards")
-                                        .customFont(20)
+                                        .customFont(min(geometry.size.width * 0.025, 20))
                                 }
                             
                             Spacer()
@@ -39,10 +39,10 @@ struct MemoryGameView: View {
                             // Timer
                             Image(.underlayGroup)
                                 .resizable()
-                                .frame(width: 150, height: 75)
+                                .frame(width: min(geometry.size.width * 0.18, 150), height: min(geometry.size.width * 0.09, 75))
                                 .overlay {
                                     Text(timeFormatted(viewModel.timeRemaining))
-                                        .customFont(22)
+                                        .customFont(min(geometry.size.width * 0.026, 22))
                                         .offset(y: -2)
                                 }
                         }
@@ -65,7 +65,8 @@ struct MemoryGameView: View {
                                                     settings.play()
                                                     viewModel.flipCard(at: position)
                                                 },
-                                                isInteractionDisabled: viewModel.disableCardInteraction
+                                                isInteractionDisabled: viewModel.disableCardInteraction,
+                                                geometry: geometry
                                             )
                                             .aspectRatio(1, contentMode: .fit)
                                         }
@@ -73,7 +74,7 @@ struct MemoryGameView: View {
                                 }
                             }
                         }
-                        .padding(25)
+                        .padding(35)
                         .background(
                             Image(.frame)
                                 .resizable()
@@ -83,7 +84,7 @@ struct MemoryGameView: View {
                     }
                     
                 case .finished(let success):
-                    gameOverView(success: success)
+                    gameOverView(success: success, geometry: geometry)
                 }
             }
             .onAppear {
@@ -95,7 +96,7 @@ struct MemoryGameView: View {
         }
     }
     
-    private func gameOverView(success: Bool) -> some View {
+    private func gameOverView(success: Bool, geometry: GeometryProxy) -> some View {
         ZStack {
             Color.black.opacity(0.7)
                 .edgesIgnoringSafeArea(.all)
@@ -105,28 +106,28 @@ struct MemoryGameView: View {
                     Image(.win)
                         .resizable()
                         .scaledToFit()
-                        .frame(height: 85)
+                        .frame(height: min(geometry.size.width * 0.1, 85))
                 } else {
                     Text("Time's Up!")
-                        .customFont(36)
+                        .customFont(min(geometry.size.width * 0.04, 36))
                 }
                 
                 if success {
                     HStack {
                         Text("+\(MiniGameType.memoryCards.reward)")
-                            .customFont(24)
+                            .customFont(min(geometry.size.width * 0.03, 24))
                         
                         Image(.coin)
                             .resizable()
-                            .frame(width: 40, height: 40)
+                            .frame(width: min(geometry.size.width * 0.05, 40), height: min(geometry.size.width * 0.05, 40))
                     }
                 }
                 
                 MainButtonView(
                     label: "Back to menu",
-                    labelSize: 18,
-                    width: 180,
-                    height: 55
+                    labelSize: min(geometry.size.width * 0.022, 18),
+                    width: min(geometry.size.width * 0.22, 180),
+                    height: min(geometry.size.width * 0.068, 55)
                 ) {
                     settings.play()
                     if success {
@@ -137,16 +138,16 @@ struct MemoryGameView: View {
                 
                 MainButtonView(
                     label: "Play again",
-                    labelSize: 18,
-                    width: 180,
-                    height: 55
+                    labelSize: min(geometry.size.width * 0.022, 18),
+                    width: min(geometry.size.width * 0.22, 180),
+                    height: min(geometry.size.width * 0.068, 55)
                 ) {
                     settings.play()
                     viewModel.resetGame()
                 }
             }
-            .padding(.vertical, 20)
-            .padding(.horizontal, 40)
+            .padding(.vertical, min(geometry.size.width * 0.025, 20))
+            .padding(.horizontal, min(geometry.size.width * 0.05, 40))
             .background(
                 Image(.frame)
                     .resizable()
@@ -161,15 +162,11 @@ struct MemoryGameView: View {
     }
 }
 
-#Preview {
-    MemoryGameView()
-        .environmentObject(AppViewModel())
-}
-
 struct MemoryCardView: View {
     let card: MemoryCard
     let onTap: () -> Void
     let isInteractionDisabled: Bool
+    let geometry: GeometryProxy
     
     @State private var scale: CGFloat = 1.0
     @State private var rotation: Double = 0
@@ -232,4 +229,9 @@ struct MemoryCardView: View {
             }
         }
     }
+}
+
+#Preview {
+    MemoryGameView()
+        .environmentObject(AppViewModel())
 }
