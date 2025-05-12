@@ -32,19 +32,12 @@ struct LoadingView: View {
                     
                     Image(.buttonGroup2)
                         .resizable()
-                        .frame(maxWidth: 280, maxHeight: 60)
+                        .frame(maxWidth: 220, maxHeight: 64)
                         .foregroundStyle(.primary)
                         .overlay(alignment: .leading) {
-                            RoundedRectangle(cornerRadius: 10)
-                                .frame(width: 242, height: 32)
-                                .offset(y: -2)
-                                .foregroundStyle(.asphalt)
-                                .padding()
-                        }
-                        .overlay(alignment: .leading) {
-                            RoundedRectangle(cornerRadius: 10)
-                                .frame(width: 242 * loading, height: 32)
-                                .offset(y: -2)
+                            Capsule()
+                                .frame(width: 191 * loading, height: 42)
+                                .offset(x: -3, y: -3)
                                 .foregroundStyle(.green)
                                 .padding()
                         }

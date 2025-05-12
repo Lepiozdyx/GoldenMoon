@@ -11,12 +11,17 @@ struct ContentView: View {
     @StateObject private var appViewModel = AppViewModel()
     @StateObject private var achievementViewModel = AchievementViewModel()
     
+    private var orientation = OrientationManager.shared
+    
     var body: some View {
         ZStack {
             switch appViewModel.currentScreen {
             case .menu:
                 MenuView()
                     .environmentObject(appViewModel)
+                    .onAppear {
+                        orientation.lockLandscape()
+                    }
                 
             case .mode:
                 ModeView()
@@ -26,31 +31,52 @@ struct ContentView: View {
                 if let gameViewModel = appViewModel.millGameViewModel {
                     GameView(viewModel: gameViewModel)
                         .environmentObject(appViewModel)
+                        .onAppear {
+                            orientation.lockLandscape()
+                        }
                 }
                 
             case .settings:
                 SettingsView()
                     .environmentObject(appViewModel)
+                    .onAppear {
+                        orientation.lockLandscape()
+                    }
                 
             case .shop:
                 ShopView()
                     .environmentObject(appViewModel)
+                    .onAppear {
+                        orientation.lockLandscape()
+                    }
                 
             case .achievements:
                 AchievementsView()
                     .environmentObject(appViewModel)
+                    .onAppear {
+                        orientation.lockLandscape()
+                    }
                 
             case .reward:
                 RewardView()
                     .environmentObject(appViewModel)
+                    .onAppear {
+                        orientation.lockLandscape()
+                    }
                 
             case .miniGames:
                 MiniGamesView()
                     .environmentObject(appViewModel)
+                    .onAppear {
+                        orientation.lockLandscape()
+                    }
                 
             case .guessNumber:
                 GuessNumberView()
                     .environmentObject(appViewModel)
+                    .onAppear {
+                        orientation.lockLandscape()
+                    }
                 
             case .memoryCards:
                 MemoryGameView()
@@ -59,6 +85,9 @@ struct ContentView: View {
             case .sequence:
                 SequenceGameView()
                     .environmentObject(appViewModel)
+                    .onAppear {
+                        orientation.lockLandscape()
+                    }
             }
         }
         .onAppear {
