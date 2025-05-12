@@ -75,7 +75,7 @@ struct SidebarView: View {
             HStack {
                 SquareButtonView(image: .joystick) {
                     settings.play()
-                    //                        appViewModel.navigateTo(.minigames)
+                    appViewModel.navigateTo(.miniGames)
                 }
                 
                 SquareButtonView(image: .i) {

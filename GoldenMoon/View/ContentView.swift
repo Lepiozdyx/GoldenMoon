@@ -43,6 +43,22 @@ struct ContentView: View {
             case .reward:
                 RewardView()
                     .environmentObject(appViewModel)
+                
+            case .miniGames:
+                MiniGamesView()
+                    .environmentObject(appViewModel)
+                
+            case .guessNumber:
+                GuessNumberView()
+                    .environmentObject(appViewModel)
+                
+            case .memoryCards:
+                MemoryGameView()
+                    .environmentObject(appViewModel)
+                
+            case .sequence:
+                SequenceGameView()
+                    .environmentObject(appViewModel)
             }
         }
         .onAppear {

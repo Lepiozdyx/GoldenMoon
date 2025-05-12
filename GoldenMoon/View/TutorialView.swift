@@ -40,11 +40,13 @@ struct TutorialView: View {
     }
     
     var body: some View {
-        HStack {
+        ZStack {
+            Color.black.opacity(0.5).ignoresSafeArea()
+            
             VStack {
                 Image(.frame)
                     .resizable()
-                    .frame(width: 300, height: 200)
+                    .frame(width: 350, height: 200)
                     .overlay {
                         VStack(spacing: 10) {
                             Text("Tutorial")
@@ -88,14 +90,9 @@ struct TutorialView: View {
                         }
                     }
                 }
-                
-                Spacer()
             }
             .transition(.opacity)
-            
-            Spacer()
         }
-        .padding([.leading, .top])
     }
 }
 

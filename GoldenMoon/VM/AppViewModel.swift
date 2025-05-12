@@ -13,6 +13,10 @@ enum AppScreen {
     case shop
     case achievements
     case reward
+    case miniGames
+    case guessNumber
+    case memoryCards
+    case sequence
 }
 
 @MainActor
@@ -251,6 +255,17 @@ class AppViewModel: ObservableObject {
     func goToMenu() {
         millGameViewModel = nil
         navigateTo(.menu)
+    }
+    
+    func startMiniGame(gameType: MiniGameType) {
+        switch gameType {
+        case .guessNumber:
+            currentScreen = .guessNumber
+        case .memoryCards:
+            currentScreen = .memoryCards
+        case .sequence:
+            currentScreen = .sequence
+        }
     }
     
     // MARK: - Game State
