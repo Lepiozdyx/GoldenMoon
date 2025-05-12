@@ -26,10 +26,20 @@ struct MemoryGameView: View {
                             
                             Spacer()
                             
+                            Image(.labelGroup)
+                                .resizable()
+                                .frame(width: 255, height: 75)
+                                .overlay {
+                                    Text("Memory cards")
+                                        .customFont(20)
+                                }
+                            
+                            Spacer()
+                            
                             // Timer
                             Image(.underlayGroup)
                                 .resizable()
-                                .frame(width: 150, height: 70)
+                                .frame(width: 150, height: 75)
                                 .overlay {
                                     Text(timeFormatted(viewModel.timeRemaining))
                                         .customFont(22)

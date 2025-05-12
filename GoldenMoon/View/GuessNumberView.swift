@@ -38,25 +38,23 @@ struct GuessNumberView: View {
                     
                     Spacer()
                     
-                    ScoreboardView(amount: appViewModel.coins)
-                }
-                
-                Spacer()
-                
-                VStack(spacing: 10) {
-                    // Feedback message
-                    Text(viewModel.feedbackMessage)
-                        .customFont(16)
-                    
                     // Current guess display
                     ZStack {
                         Image(.underlayGroup)
                             .resizable()
-                            .frame(width: 140, height: 50)
+                            .frame(width: 150, height: 75)
                         
                         Text("\(Int(sliderValue))")
-                            .customFont(20)
+                            .customFont(22)
                     }
+                }
+                
+                Spacer()
+                
+                VStack(spacing: 15) {
+                    // Feedback message
+                    Text(viewModel.feedbackMessage)
+                        .customFont(16)
                     
                     HStack(spacing: 10) {
                         // Slider
@@ -174,7 +172,7 @@ struct GuessNumberView: View {
                 }
                 .frame(width: 450)
                 .padding(.horizontal, 40)
-                .padding(.vertical, 25)
+                .padding(.vertical, 30)
                 .background(
                     Image(.frame)
                         .resizable()

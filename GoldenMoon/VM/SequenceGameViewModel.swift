@@ -1,9 +1,6 @@
 //
 //  SequenceGameViewModel.swift
 //  GoldenMoon
-//
-//  Created by Alex on 11.05.2025.
-//
 
 import SwiftUI
 import Combine
@@ -69,7 +66,12 @@ class SequenceGameViewModel: ObservableObject {
     
     private func showSequence() {
         showingImageIndex = 0
-        showNextImageInSequence()
+        currentShowingImage = nil
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+            guard let self = self else { return }
+            self.showNextImageInSequence()
+        }
     }
     
     private func showNextImageInSequence() {

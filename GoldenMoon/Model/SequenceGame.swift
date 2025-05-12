@@ -6,7 +6,7 @@ import SwiftUI
 
 enum SequenceGameConstants {
     static let initialSequenceLength = 2
-    static let showImageDuration: TimeInterval = 1.0
+    static let showImageDuration: TimeInterval = 1.5
     static let successDuration: TimeInterval = 1.5
     static let availableImages = [
         "sequence_1", "sequence_2", "sequence_3", "sequence_4",
